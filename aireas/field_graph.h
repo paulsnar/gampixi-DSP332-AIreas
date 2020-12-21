@@ -10,6 +10,7 @@ using std::unique;
 using std::make_pair;
 using std::pair;
 using std::ptrdiff_t;
+using std::reference_wrapper;
 
 class Block {
 public:
@@ -40,6 +41,7 @@ private:
 
 class Edge {
 public:
+	Edge();
 	Edge(Block* first, Block* second);
 	void calculate_valid();
 	inline bool get_valid() {
@@ -85,7 +87,7 @@ public:
 	Field(const Field& other);
 	~Field();
 	bool merge_edge(Edge& edge); // Basically performs the move => removes edge, merges blocks, merges overlapping edges
-	vector<Edge> get_valid_edges(); // Basically returns every valid mode
+	vector<reference_wrapper<Edge>> get_valid_edges(); // Basically returns every valid mode
 private:
 	void update_edge_validity(); // Updates the valid state for each edge
 	Block* blocks; // Dynamic array of blocks, allocated when field is created, could technically be fixed at compile-time

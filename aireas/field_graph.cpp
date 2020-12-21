@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "field_graph.h"
 
+Edge::Edge()
+{
+	this->set_first(nullptr);
+	this->set_second(nullptr);
+}
+
 Edge::Edge(Block * first, Block * second)
 {
 	this->set_first(first);
@@ -57,6 +63,7 @@ bool Field::merge_edge(Edge& edge)
 	edge.get_second()->set_active(false);
 	
 	// 1.2) Update edge pointers to no longer point to invalidated block
+
 	for (auto& e : this->edges) {
 		if (&e == &edge) continue; // This is the edge we are merging and it will be gone either way.
 
@@ -76,6 +83,8 @@ bool Field::merge_edge(Edge& edge)
 	sort(this->edges.begin(), this->edges.end());
 	auto new_end = unique(this->edges.begin(), this->edges.end());
 	this->edges.resize(std::distance(this->edges.begin(), new_end));
+
+	return true;
 }
 
 void Field::update_edge_validity()
@@ -84,12 +93,12 @@ void Field::update_edge_validity()
 
 }
 
-vector<Edge> Field::get_valid_edges()
+vector<reference_wrapper<Edge>> Field::get_valid_edges()
 {
-	vector<Edge> valid_edges;
+	vector<reference_wrapper<Edge>> valid_edges;
 
 	for (auto e : this->edges) {
-		if (e.get_valid) {
+		if (e.get_valid()) {
 			valid_edges.push_back(e);
 		}
 	}
