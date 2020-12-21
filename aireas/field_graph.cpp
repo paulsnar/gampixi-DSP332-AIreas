@@ -21,16 +21,30 @@ void Edge::calculate_valid()
 Field::Field(size_t n)
 {
 	this->blocks_size = n * n;
+	this->blocks_size_n = n;
 	this->blocks = new Block[this->blocks_size];
 
-	// TODO: Assign default-grid layout values to the blocks.
+	// Assign default-grid layout values to the blocks.
+	for (size_t y = 0; y < n; y++) {
+		for (size_t x = 0; x < n; x++) {
+			this->blocks[y*n + x] = Block(x, y, 1, 1);
+		}
+	}
 
-	// TODO: Generate initial edges for the grid layout.
+	// Generate initial edges for the grid layout.
+	for (size_t y = 0; y < n; y++) {
+		for (size_t x = 0; x < n; x++) {
+			if (x != n - 1)
+				this->edges.push_back(Edge(&this->blocks[y*n + x], &this->blocks[y*n + x + 1]));
+			if (y != n - 1)
+				this->edges.push_back(Edge(&this->blocks[y*n + x], &this->blocks[(y + 1)*n + x]));
+		}
+	}
 }
 
 Field::Field(const Field & other)
 {
-	Field(other.blocks_size);
+	Field(other.blocks_size_n);
 
 	for (size_t i = 0; i < this->blocks_size; i++)
 		this->blocks[i] = other.blocks[i];
@@ -49,6 +63,16 @@ Field::Field(const Field & other)
 Field::~Field()
 {
 	delete[] this->blocks;
+}
+
+const Block * Field::get_block(size_t at) const
+{
+	return &this->blocks[at];
+}
+
+const Block * Field::get_block(int x, int y) const
+{
+	return this->get_block(y*this->blocks_size_n + x);
 }
 
 bool Field::merge_edge(Edge& edge)
@@ -93,7 +117,7 @@ void Field::update_edge_validity()
 
 }
 
-vector<reference_wrapper<Edge>> Field::get_valid_edges()
+const vector<reference_wrapper<Edge>> Field::get_valid_edges()
 {
 	vector<reference_wrapper<Edge>> valid_edges;
 

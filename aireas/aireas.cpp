@@ -2,10 +2,24 @@
 //
 
 #include "pch.h"
+#include "field_graph.h"
 #include "raylib.h"
+
+void draw_field(const Field& field) {
+	for (int i = 0; i < field.get_blocks_size(); i++) {
+		const Block* b = field.get_block(i);
+		//DrawRectangle(, int posY, int width, int height, Color color);
+	}
+}
+
+void draw_field_edges(const Field& field) {
+
+}
 
 int main(int argc, char* argv[])
 {
+	Field field = Field(3);
+
 	// Initialization
 	//--------------------------------------------------------------------------------------
 	int screenWidth = 800;

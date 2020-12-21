@@ -86,11 +86,17 @@ public:
 	Field(size_t n); // Initializes a field of size n*n
 	Field(const Field& other);
 	~Field();
+	const Block* get_block(size_t at) const;
+	const Block* get_block(int x, int y) const;
+	inline size_t get_blocks_size() const {
+		return this->blocks_size;
+	}
 	bool merge_edge(Edge& edge); // Basically performs the move => removes edge, merges blocks, merges overlapping edges
-	vector<reference_wrapper<Edge>> get_valid_edges(); // Basically returns every valid mode
+	const vector<reference_wrapper<Edge>> get_valid_edges(); // Basically returns every valid mode
 private:
 	void update_edge_validity(); // Updates the valid state for each edge
 	Block* blocks; // Dynamic array of blocks, allocated when field is created, could technically be fixed at compile-time
+	size_t blocks_size_n;
 	size_t blocks_size;
 	vector<Edge> edges;
 };
