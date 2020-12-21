@@ -5,6 +5,8 @@
 
 using std::vector;
 using std::min;
+using std::sort;
+using std::unique;
 using std::make_pair;
 using std::pair;
 using std::ptrdiff_t;
@@ -16,6 +18,12 @@ public:
 	bool combine_to(const Block& other);
 	inline void set_active(bool value) {
 		this->active = active;
+	}
+	inline bool operator < (const Block& rhs) {
+		if (this->x == rhs.x) {
+			return this->y < rhs.y;
+		}
+		return this->x < rhs.x;
 	}
 	inline void operator=(const Block& rhs) {
 		this->x = rhs.x;
@@ -47,6 +55,12 @@ public:
 			return true;
 		}
 		return false;
+	}
+	inline bool operator < (const Edge& rhs) {
+		if (this->blocks.first == rhs.blocks.first) {
+			return this->blocks.second < rhs.blocks.second;
+		}
+		return this->blocks.first < rhs.blocks.first;
 	}
 	inline Block* get_first() {
 		return this->blocks.first;

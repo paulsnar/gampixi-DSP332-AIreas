@@ -55,16 +55,27 @@ bool Field::merge_edge(Edge& edge)
 		return false;
 	}
 	edge.get_second()->set_active(false);
+	
+	// 1.2) Update edge pointers to no longer point to invalidated block
+	for (auto& e : this->edges) {
+		if (&e == &edge) continue; // This is the edge we are merging and it will be gone either way.
+
+		if (e.get_first() == edge.get_second()) {
+			e.set_first(edge.get_first());
+		} else if (e.get_second() == edge.get_second()) {
+			e.set_second(edge.get_first());
+		}
+	}
 
 	// 2) Remove edge which was the move done
 
 	this->edges.erase(std::remove(this->edges.begin(), this->edges.end(), edge));
 
-	// 3) Merge edges from connected blocks, remove overlapping and meaningless edges
-	// TODO: Basically every connection to second is now to first
-
-	// TODO: Remove meaningless and duplicates
-
+	// 3) Remove overlapping edges (duplicates)
+	
+	sort(this->edges.begin(), this->edges.end());
+	auto new_end = unique(this->edges.begin(), this->edges.end());
+	this->edges.resize(std::distance(this->edges.begin(), new_end));
 }
 
 void Field::update_edge_validity()
