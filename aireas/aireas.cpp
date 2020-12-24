@@ -5,6 +5,8 @@
 #include "field_graph.h"
 #include "raylib.h"
 #include <tuple>
+#include <cstdlib>
+#include <ctime>
 
 constexpr unsigned int BLOCK_DRAW_SIZE = 30;
 constexpr unsigned int BLOCK_PADDING = 5;
@@ -24,7 +26,7 @@ tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) 
 void draw_field(const Field& field) {
 	for (size_t i = 0; i < field.get_blocks_size(); i++) {
 		const Block* b = field.get_block(i);
-		if (!b->get_active()) continue;
+		if (b->get_active() == false) continue;
 
 		int x, y, w, h;
 		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
@@ -63,6 +65,7 @@ void draw_field_edges(Field& field) {
 int main(int argc, char* argv[])
 {
 	Field field = Field(3);
+	std::srand(std::time(NULL));
 
 	// Initialization
 	//--------------------------------------------------------------------------------------
@@ -95,7 +98,8 @@ int main(int argc, char* argv[])
 		EndDrawing();
 
 		if (IsKeyPressed(KEY_SPACE)) {
-			field.merge_edge(field.get_valid_edges()[0].get());
+			auto edges = field.get_valid_edges();
+			field.merge_edge(edges[rand() % edges.size()].get());
 		}
 		//----------------------------------------------------------------------------------
 	}

@@ -25,7 +25,7 @@ public:
 		return this->active;
 	}
 	inline void set_active(bool value) {
-		this->active = active;
+		this->active = value;
 	}
 	inline bool operator < (const Block& rhs) {
 		if (this->x == rhs.x) {
