@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
 	SetTargetFPS(60);
 	//--------------------------------------------------------------------------------------
-
+	
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -98,8 +98,10 @@ int main(int argc, char* argv[])
 		EndDrawing();
 
 		if (IsKeyPressed(KEY_SPACE)) {
-			auto edges = field.get_valid_edges();
-			field.merge_edge(edges[rand() % edges.size()].get());
+			auto field_copy = field;
+			auto edges = field_copy.get_valid_edges();
+  			field_copy.merge_edge(edges[rand() % edges.size()].get());
+			field = field_copy;
 		}
 		//----------------------------------------------------------------------------------
 	}

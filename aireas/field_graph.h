@@ -3,6 +3,7 @@
 #include <tuple>
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
 
 using std::vector;
 using std::min;
@@ -17,6 +18,7 @@ using std::reference_wrapper;
 class Block {
 public:
 	Block();
+	Block(const Block& other);
 	Block(int x, int y, int w, int h);
 	bool combine_to(const Block& other);
 	const bool combine_test(const Block & other) const;
@@ -33,12 +35,13 @@ public:
 		}
 		return this->x < rhs.x;
 	}
-	inline void operator=(const Block& rhs) {
+	inline Block& operator=(const Block& rhs) {
 		this->x = rhs.x;
 		this->y = rhs.y;
 		this->w = rhs.w;
 		this->h = rhs.h;
 		this->active = rhs.active;
+		return *this;
 	}
 private:
 	bool active;
@@ -49,6 +52,7 @@ private:
 class Edge {
 public:
 	Edge();
+	Edge(const Edge& other);
 	Edge(Block* first, Block* second);
 	void calculate_valid();
 	const inline bool get_valid() const {
@@ -93,6 +97,7 @@ public:
 	Field(size_t n); // Initializes a field of size n*n
 	Field(const Field& other);
 	~Field();
+	Field& operator=(const Field& rhs);
 	const Block* get_block(size_t at) const;
 	const Block* get_block(int x, int y) const;
 	inline size_t get_blocks_size() const {

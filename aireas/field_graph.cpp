@@ -7,6 +7,12 @@ Edge::Edge()
 	this->set_second(nullptr);
 }
 
+Edge::Edge(const Edge & other)
+{
+	this->blocks = other.blocks;
+	this->valid = other.valid;
+}
+
 Edge::Edge(Block * first, Block * second)
 {
 	this->set_first(first);
@@ -21,6 +27,7 @@ void Edge::calculate_valid()
 
 Field::Field(size_t n)
 {
+	std::cout << "Construct field base" << std::endl;
 	this->blocks_size = n * n;
 	this->blocks_size_n = n;
 	this->blocks = new Block[this->blocks_size];
@@ -45,7 +52,24 @@ Field::Field(size_t n)
 
 Field::Field(const Field & other)
 {
-	Field(other.blocks_size_n);
+	std::cout << "Construct field copy" << std::endl;
+	*this = other;
+}
+
+Field::~Field()
+{
+	std::cout << "Destruct field" << std::endl;
+	delete[] this->blocks;
+}
+
+Field& Field::operator=(const Field & other)
+{
+	if (this == &other) return *this;
+	std::cout << "Assign field (copy)" << std::endl;
+
+	this->blocks_size = other.blocks_size;
+	this->blocks_size_n = other.blocks_size_n;
+	this->blocks = new Block[this->blocks_size];
 
 	for (size_t i = 0; i < this->blocks_size; i++)
 		this->blocks[i] = other.blocks[i];
@@ -53,17 +77,14 @@ Field::Field(const Field & other)
 	// Copy edges, preserving order by pointer black magic (well there isn't actually anything
 	// very black magic to this, we're just certain that the block arrangement in memory is the same)
 	this->edges = vector<Edge>(other.edges);
-	ptrdiff_t diff = this->blocks - other.blocks;
+	ptrdiff_t diff = (char*)&this->blocks[0] - (char*)&other.blocks[0];
 
 	for (auto& e : this->edges) {
-		e.set_first(e.get_first() + diff);
-		e.set_second(e.get_second() + diff);
+		e.set_first((Block*)((char*)e.get_first() + diff));
+		e.set_second((Block*)((char*)e.get_second() + diff));
 	}
-}
 
-Field::~Field()
-{
-	delete[] this->blocks;
+	return *this;
 }
 
 const Block * Field::get_block(size_t at) const
@@ -142,6 +163,11 @@ Block::Block()
 	this->w = 0;
 	this->h = 0;
 	this->active = false;
+}
+
+Block::Block(const Block & other)
+{
+	*this = other;
 }
 
 Block::Block(int x, int y, int w, int h)
