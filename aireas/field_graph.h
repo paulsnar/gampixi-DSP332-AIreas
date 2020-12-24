@@ -21,6 +21,9 @@ public:
 	bool combine_to(const Block& other);
 	const bool combine_test(const Block & other) const;
 	const tuple<int, int, int, int> get_dimensions() const;
+	const inline bool get_active() const {
+		return this->active;
+	}
 	inline void set_active(bool value) {
 		this->active = active;
 	}

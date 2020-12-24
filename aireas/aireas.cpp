@@ -24,9 +24,15 @@ tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) 
 void draw_field(const Field& field) {
 	for (size_t i = 0; i < field.get_blocks_size(); i++) {
 		const Block* b = field.get_block(i);
+		if (!b->get_active()) continue;
+
 		int x, y, w, h;
 		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
 		DrawRectangle(x, y, w, h, GREEN);
+
+		char block_label[4];
+		sprintf_s(block_label, 4, "%u", i);
+		DrawText(block_label, x, y, 12, DARKGREEN);
 	}
 }
 
@@ -79,14 +85,18 @@ int main(int argc, char* argv[])
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
+		ClearBackground(RAYWHITE);
+
 		draw_field(field);
 		draw_field_edges(field);
-
-		ClearBackground(RAYWHITE);
 
 		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
+
+		if (IsKeyPressed(KEY_SPACE)) {
+			field.merge_edge(field.get_valid_edges()[0].get());
+		}
 		//----------------------------------------------------------------------------------
 	}
 

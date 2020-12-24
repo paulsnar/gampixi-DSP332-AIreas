@@ -108,6 +108,7 @@ bool Field::merge_edge(Edge& edge)
 	sort(this->edges.begin(), this->edges.end());
 	auto new_end = unique(this->edges.begin(), this->edges.end());
 	this->edges.resize(std::distance(this->edges.begin(), new_end));
+	this->update_edge_validity();
 
 	return true;
 }
@@ -115,7 +116,9 @@ bool Field::merge_edge(Edge& edge)
 void Field::update_edge_validity()
 {
 	// Updates edge validity so get_valid_edges() returns relevant stuff
-
+	for (auto& e : this->edges) {
+		e.calculate_valid();
+	}
 }
 
 const vector<reference_wrapper<Edge>> Field::get_valid_edges()
