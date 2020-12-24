@@ -25,6 +25,10 @@ void Edge::calculate_valid()
 	this->valid = this->get_first()->combine_test(*this->get_second());
 }
 
+Field::Field() {
+	Field(3);
+}
+
 Field::Field(size_t n)
 {
 	std::cout << "Construct field base" << std::endl;

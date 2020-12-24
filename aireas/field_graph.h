@@ -94,6 +94,7 @@ private:
 
 class Field {
 public:
+	Field();
 	Field(size_t n); // Initializes a field of size n*n
 	Field(const Field& other);
 	~Field();

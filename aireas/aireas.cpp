@@ -31,8 +31,6 @@ void draw_field(const Field& field) {
 
 		int x, y, w, h;
 		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
-		
-		x += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
 
 		DrawRectangle(x, y, w, h, GREEN);
 
@@ -55,9 +53,6 @@ void draw_field_edges(Field& field) {
 		y1 += h1 / 2;
 		x2 += w2 / 2;
 		y2 += h2 / 2;
-
-		x1 += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
-		x2 += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
 
 		DrawLine(x1, y1, x2, y2, DARKBLUE);
 
