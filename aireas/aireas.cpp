@@ -7,6 +7,7 @@
 #include <tuple>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 constexpr unsigned int BLOCK_DRAW_SIZE = 30;
 constexpr unsigned int BLOCK_PADDING = 5;
@@ -30,6 +31,9 @@ void draw_field(const Field& field) {
 
 		int x, y, w, h;
 		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
+		
+		x += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
+
 		DrawRectangle(x, y, w, h, GREEN);
 
 		char block_label[4];
@@ -52,6 +56,9 @@ void draw_field_edges(Field& field) {
 		x2 += w2 / 2;
 		y2 += h2 / 2;
 
+		x1 += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
+		x2 += n_field * (BLOCK_DRAW_SIZE * 3 + BLOCK_PADDING * 3);
+
 		DrawLine(x1, y1, x2, y2, DARKBLUE);
 
 		char edge_label[4];
@@ -64,7 +71,8 @@ void draw_field_edges(Field& field) {
 
 int main(int argc, char* argv[])
 {
-	Field field = Field(3);
+	std::vector<Field> fields;
+	fields.push_back(Field(3));
 	std::srand(std::time(NULL));
 
 	// Initialization
@@ -90,18 +98,20 @@ int main(int argc, char* argv[])
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 
-		draw_field(field);
-		draw_field_edges(field);
+		for (size_t i = 0; i < fields.size(); i++) {
+			draw_field(fields[i]);
+			draw_field_edges(fields[i]);
+		}
 
 		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
 
 		if (IsKeyPressed(KEY_SPACE)) {
-			auto field_copy = field;
+			auto field_copy = fields.back();
 			auto edges = field_copy.get_valid_edges();
   			field_copy.merge_edge(edges[rand() % edges.size()].get());
-			field = field_copy;
+			fields.push_back(field_copy);
 		}
 		//----------------------------------------------------------------------------------
 	}
