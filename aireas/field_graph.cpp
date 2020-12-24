@@ -174,7 +174,7 @@ bool Block::combine_to(const Block & other)
 		pair<const Block&, const Block&> cmp = (this->x <= other.x) ?
 			make_pair(*this, other) : make_pair(other, *this);
 
-		if (cmp.second.x == cmp.first.x + cmp.first.x) {
+		if (cmp.second.x == cmp.first.x + cmp.first.w) {
 			// Combine and get the hell outta here
 			this->x = min(this->x, other.x);
 			this->w = this->w + other.w;
@@ -195,13 +195,12 @@ const bool Block::combine_test(const Block & other) const
 			return true;
 		}
 
-	}
-	else if (this->y == other.y && this->h == other.h) {
+	} else if (this->y == other.y && this->h == other.h) {
 		// Since the Y components are equal, we are merging along X axis
 		pair<const Block&, const Block&> cmp = (this->x <= other.x) ?
 			make_pair(*this, other) : make_pair(other, *this);
 
-		if (cmp.second.x == cmp.first.x + cmp.first.x) {
+		if (cmp.second.x == cmp.first.x + cmp.first.w) {
 			return true;
 		}
 	}
