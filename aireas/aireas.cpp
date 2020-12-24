@@ -4,16 +4,54 @@
 #include "pch.h"
 #include "field_graph.h"
 #include "raylib.h"
+#include <tuple>
+
+constexpr unsigned int BLOCK_DRAW_SIZE = 30;
+constexpr unsigned int BLOCK_PADDING = 5;
+
+using std::tuple;
+
+tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
+	int x, y, w, h;
+	std::tie(x, y, w, h) = b;
+	x *= BLOCK_DRAW_SIZE + BLOCK_PADDING;
+	y *= BLOCK_DRAW_SIZE + BLOCK_PADDING;
+	w *= BLOCK_DRAW_SIZE;
+	h *= BLOCK_DRAW_SIZE;
+	return std::make_tuple(x, y, w, h);
+}
 
 void draw_field(const Field& field) {
-	for (int i = 0; i < field.get_blocks_size(); i++) {
+	for (size_t i = 0; i < field.get_blocks_size(); i++) {
 		const Block* b = field.get_block(i);
-		//DrawRectangle(, int posY, int width, int height, Color color);
+		int x, y, w, h;
+		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
+		DrawRectangle(x, y, w, h, GREEN);
 	}
 }
 
-void draw_field_edges(const Field& field) {
+void draw_field_edges(Field& field) {
+	unsigned int edge_index = 0;
+	for (auto e : field.get_valid_edges()) {
+		Edge& edge = e.get();
+		int x1, y1, w1, h1;
+		int x2, y2, w2, h2;
+		std::tie(x1, y1, w1, h1) = block_to_draw_dimensions(edge.get_first()->get_dimensions());
+		std::tie(x2, y2, w2, h2) = block_to_draw_dimensions(edge.get_second()->get_dimensions());
 
+		x1 += w1 / 2;
+		y1 += h1 / 2;
+		x2 += w2 / 2;
+		y2 += h2 / 2;
+
+		DrawLine(x1, y1, x2, y2, DARKBLUE);
+
+		char edge_label[4];
+		sprintf_s(edge_label, 4, "%u", edge_index);
+		DrawText(edge_label, (x1+x2)/2, (y1+y2)/2, 12, RED);
+
+		edge_index++;
+	}
 }
 
 int main(int argc, char* argv[])
@@ -25,7 +63,7 @@ int main(int argc, char* argv[])
 	int screenWidth = 800;
 	int screenHeight = 450;
 
-	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
 
 	SetTargetFPS(60);
 	//--------------------------------------------------------------------------------------
@@ -41,10 +79,12 @@ int main(int argc, char* argv[])
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
+		draw_field(field);
+		draw_field_edges(field);
 
 		ClearBackground(RAYWHITE);
 
-		DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
 		//----------------------------------------------------------------------------------

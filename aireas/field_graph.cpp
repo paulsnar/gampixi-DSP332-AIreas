@@ -11,11 +11,12 @@ Edge::Edge(Block * first, Block * second)
 {
 	this->set_first(first);
 	this->set_second(second);
+	this->calculate_valid();
 }
 
 void Edge::calculate_valid()
 {
-	// TODO: Do.
+	this->valid = this->get_first()->combine_test(*this->get_second());
 }
 
 Field::Field(size_t n)
@@ -121,9 +122,10 @@ const vector<reference_wrapper<Edge>> Field::get_valid_edges()
 {
 	vector<reference_wrapper<Edge>> valid_edges;
 
-	for (auto e : this->edges) {
+	for (auto& e : this->edges) {
 		if (e.get_valid()) {
-			valid_edges.push_back(e);
+			auto ref = std::ref(e);
+			valid_edges.push_back(ref);
 		}
 	}
 
@@ -181,4 +183,33 @@ bool Block::combine_to(const Block & other)
 	}
 
 	return false;
+}
+
+const bool Block::combine_test(const Block & other) const
+{
+	if (this->x == other.x && this->w == other.w) {
+		pair<const Block&, const Block&> cmp = (this->y <= other.y) ?
+			make_pair(*this, other) : make_pair(other, *this);
+
+		if (cmp.second.y == cmp.first.y + cmp.first.h) {
+			return true;
+		}
+
+	}
+	else if (this->y == other.y && this->h == other.h) {
+		// Since the Y components are equal, we are merging along X axis
+		pair<const Block&, const Block&> cmp = (this->x <= other.x) ?
+			make_pair(*this, other) : make_pair(other, *this);
+
+		if (cmp.second.x == cmp.first.x + cmp.first.x) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+const tuple<int, int, int, int> Block::get_dimensions() const
+{
+	return std::make_tuple(x, y, w, h);
 }

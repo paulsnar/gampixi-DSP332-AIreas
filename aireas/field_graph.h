@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <tuple>
 #include <algorithm>
 #include <cstdlib>
 
@@ -9,6 +10,7 @@ using std::sort;
 using std::unique;
 using std::make_pair;
 using std::pair;
+using std::tuple;
 using std::ptrdiff_t;
 using std::reference_wrapper;
 
@@ -17,6 +19,8 @@ public:
 	Block();
 	Block(int x, int y, int w, int h);
 	bool combine_to(const Block& other);
+	const bool combine_test(const Block & other) const;
+	const tuple<int, int, int, int> get_dimensions() const;
 	inline void set_active(bool value) {
 		this->active = active;
 	}
@@ -44,7 +48,7 @@ public:
 	Edge();
 	Edge(Block* first, Block* second);
 	void calculate_valid();
-	inline bool get_valid() {
+	const inline bool get_valid() const {
 		return this->valid;
 	}
 	inline bool operator==(const Edge& rhs) {
