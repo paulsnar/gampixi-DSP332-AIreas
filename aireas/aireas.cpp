@@ -18,8 +18,8 @@ tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) 
 	std::tie(x, y, w, h) = b;
 	x *= BLOCK_DRAW_SIZE + BLOCK_PADDING;
 	y *= BLOCK_DRAW_SIZE + BLOCK_PADDING;
-	w *= BLOCK_DRAW_SIZE;
-	h *= BLOCK_DRAW_SIZE;
+	w = w * BLOCK_DRAW_SIZE + (w - 1)*BLOCK_PADDING;
+	h = h * BLOCK_DRAW_SIZE + (h - 1)*BLOCK_PADDING;
 	return std::make_tuple(x, y, w, h);
 }
 
