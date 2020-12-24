@@ -19,8 +19,8 @@ public:
 	GameState();
 	GameState(size_t field_size);
 	GameState(const GameState& other);
-	GameState operator=(const GameState& other);
-	GameState perform_move(Edge& edge);
+	GameState& operator=(const GameState& other);
+	GameState& perform_move(Edge& edge);
 	inline const GamePlayer get_current_player() const {
 		return current_player;
 	}

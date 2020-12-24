@@ -22,16 +22,17 @@ GameState::GameState(const GameState& other)
 	*this = other;
 }
 
-GameState GameState::operator=(const GameState & other)
+GameState& GameState::operator=(const GameState & other)
 {
 	field = other.field;
 	current_player = other.current_player;
 	status = other.status;
 	score_p1 = other.score_p1;
 	score_p2 = other.score_p2;
+	return *this;
 }
 
-GameState GameState::perform_move(Edge & edge)
+GameState& GameState::perform_move(Edge & edge)
 {
 	// Whenever we perform a move, don't mutate the previous gamestate, but create a new one.
 	// This way we can simulate moves ahead of time, do with them as please, without affecting

@@ -67,6 +67,7 @@ void draw_field_edges(Field& field) {
 int main(int argc, char* argv[])
 {
 	std::vector<Field> fields;
+	fields.reserve(100);
 	fields.push_back(Field(3));
 	std::srand(std::time(NULL));
 
@@ -93,10 +94,10 @@ int main(int argc, char* argv[])
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 
-		for (size_t i = 0; i < fields.size(); i++) {
-			draw_field(fields[i]);
-			draw_field_edges(fields[i]);
-		}
+		//for (size_t i = 0; i < fields.size(); i++) {
+			draw_field(fields.back());
+			draw_field_edges(fields.back());
+		//}
 
 		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
 
