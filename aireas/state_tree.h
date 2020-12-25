@@ -10,6 +10,7 @@ class StateTreeNode {
 public:
 	StateTreeNode(size_t field_size); // Create root node
 	StateTreeNode(GameState& from, size_t move); // Create next nodes, with each representing a possible mode
+	int node_value;
 	GameState value;
 	const size_t get_child_count() const {
 		return parsed.size();
@@ -23,3 +24,5 @@ private:
 };
 
 void walk_tree_with_depth(StateTreeNode& from, size_t depth);
+
+int walk_tree_with_alphabeta(StateTreeNode& from, int alpha, int beta);

@@ -112,8 +112,8 @@ void render_score(GameState& gameState) {
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Generate tree up to depth 5, because why the hell not." << std::endl;
-	walk_tree_with_depth(current_state, 5);
+	std::cout << "Perform AlphaBeta search algo, gonna take a while I think..." << std::endl;
+	walk_tree_with_alphabeta(root, INT_MIN, INT_MAX);
 
 	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
 	update_renderblocks(current_state.value.get_field());
