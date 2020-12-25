@@ -110,6 +110,9 @@ public:
 	inline size_t get_blocks_size() const {
 		return this->blocks_size;
 	}
+	const inline size_t get_valid_edge_count() const {
+		return valid_edge_count;
+	}
 	bool merge_edge(Edge& edge); // Basically performs the move => removes edge, merges blocks, merges overlapping edges
 	const vector<reference_wrapper<Edge>> get_valid_edges(); // Basically returns every valid mode
 private:
@@ -117,5 +120,6 @@ private:
 	Block* blocks; // Dynamic array of blocks, allocated when field is created, could technically be fixed at compile-time
 	size_t blocks_size_n;
 	size_t blocks_size;
+	size_t valid_edge_count;
 	vector<Edge> edges;
 };

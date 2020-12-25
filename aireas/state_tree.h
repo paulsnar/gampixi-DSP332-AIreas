@@ -15,6 +15,9 @@ public:
 	const size_t get_child_count() const {
 		return parsed.size();
 	}
+	const inline bool get_parsed(size_t idx) const {
+		return parsed.at(idx);
+	}
 	StateTreeNode& get_child(size_t idx);
 private:
 	vector<bool> parsed; // True, if we have fully generated the next tree node. Might be false because of pruning.

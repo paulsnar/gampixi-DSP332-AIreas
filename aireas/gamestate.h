@@ -22,7 +22,7 @@ public:
 	GameState(const GameState& other);
 	GameState& operator=(const GameState& other);
 	GameState perform_move(Edge edge);
-	GameState & perform_move_in_place(Edge edge, GameState & place);
+	void perform_move_to_place(Edge edge, GameState & place);
 	inline const GamePlayer get_current_player() const {
 		return current_player;
 	}

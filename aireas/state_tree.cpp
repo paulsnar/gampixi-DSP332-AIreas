@@ -10,22 +10,35 @@ StateTreeNode::StateTreeNode(size_t field_size)
 {
 	value = GameState(field_size);
 	node_value = value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
-	parsed = vector<bool>(value.get_field().get_valid_edges().size(), false);
+	parsed = vector<bool>(value.get_field().get_valid_edge_count(), false);
 	next = vector<StateTreeNode>();
 	next.reserve(parsed.size());
 }
 
 StateTreeNode::StateTreeNode(GameState& from, size_t move)
 {
-	value = from.perform_move(from.get_field().get_valid_edges()[move].get());
-	parsed = vector<bool>(value.get_field().get_valid_edges().size(), false);
+	value = from.perform_move(from.get_field().get_valid_edges().at(move).get());
+	parsed = vector<bool>(value.get_field().get_valid_edge_count(), false);
 	next = vector<StateTreeNode>();
 	next.reserve(parsed.size());
 
 	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
 		// The more we win (larger score delta), the better
-		node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
+		//node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
+		switch (value.get_status()) {
+		case GameStatus::Player1Victory:
+			node_value = 1;
+			break;
+		case GameStatus::Player2Victory:
+			node_value = -1;
+			break;
+		case GameStatus::Playing:
+		case GameStatus::Draw:
+		default:
+			node_value = 0;
+			break;
+		}
 	} else {
 		node_value = value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
 	}
@@ -63,8 +76,8 @@ void walk_tree_with_depth(StateTreeNode & from, size_t depth)
 int walk_tree_with_alphabeta(StateTreeNode & from, int alpha, int beta)
 {
 	if (from.value.get_status() != GameStatus::Playing) {
-		std::cout << "Reached end, score " << from.value.get_score(GamePlayer::Player1) << " | "
-			<< from.value.get_score(GamePlayer::Player2) << std::endl;
+		//std::cout << "Reached end, score " << from.value.get_score(GamePlayer::Player1) << " | "
+		//	<< from.value.get_score(GamePlayer::Player2) << std::endl;
 		return from.node_value;
 	}
 

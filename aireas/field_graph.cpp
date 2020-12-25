@@ -26,11 +26,18 @@ void Edge::calculate_valid()
 }
 
 Field::Field() {
-	Field(3);
+	Field(0);
 }
 
 Field::Field(size_t n)
 {
+	if (n == 0) {
+		// Dumb initializer because this Field is going to get replaced!
+		this->blocks_size = n * n;
+		this->blocks_size_n = n;
+		return;
+	}
+
 	this->blocks_size = n * n;
 	this->blocks_size_n = n;
 	this->blocks = new Block[this->blocks_size];
@@ -51,6 +58,8 @@ Field::Field(size_t n)
 				this->edges.push_back(Edge(&this->blocks[y*n + x], &this->blocks[(y + 1)*n + x]));
 		}
 	}
+
+	this->valid_edge_count = edges.size();
 }
 
 Field::Field(const Field & other)
@@ -60,6 +69,7 @@ Field::Field(const Field & other)
 
 Field::~Field()
 {
+	if (this->blocks_size == 0) return;
 	delete[] this->blocks;
 }
 
@@ -70,6 +80,7 @@ Field& Field::operator=(const Field & other)
 	this->blocks_size = other.blocks_size;
 	this->blocks_size_n = other.blocks_size_n;
 	this->blocks = new Block[this->blocks_size];
+	this->valid_edge_count = other.valid_edge_count;
 
 	for (size_t i = 0; i < this->blocks_size; i++)
 		this->blocks[i] = other.blocks[i];
@@ -137,8 +148,10 @@ bool Field::merge_edge(Edge& edge)
 void Field::update_edge_validity()
 {
 	// Updates edge validity so get_valid_edges() returns relevant stuff
+	valid_edge_count = 0;
 	for (auto& e : this->edges) {
 		e.calculate_valid();
+		if (e.get_valid()) valid_edge_count++;
 	}
 }
 

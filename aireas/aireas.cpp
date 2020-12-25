@@ -45,10 +45,11 @@ void draw_field(const Field& field) {
 	}
 }
 
-void draw_field_edges(Field& field) {
+void draw_field_edges(StateTreeNode& tree_node) {
 	unsigned int edge_index = 0;
-	for (auto e : field.get_valid_edges()) {
-		Edge& edge = e.get();
+	auto edges = tree_node.value.get_field().get_valid_edges();
+	for (size_t i = 0; i < edges.size(); i++) {
+		Edge& edge = edges.at(i).get();
 		int x1, y1, w1, h1;
 		int x2, y2, w2, h2;
 		std::tie(x1, y1, w1, h1) = block_to_draw_dimensions(edge.get_first()->get_dimensions());
@@ -61,8 +62,15 @@ void draw_field_edges(Field& field) {
 
 		DrawLine(x1, y1, x2, y2, DARKBLUE);
 
-		char edge_label[4];
-		sprintf_s(edge_label, 4, "%u", edge_index);
+		char edge_label[16];
+
+		bool node_evaluated = tree_node.get_parsed(i);
+		int path_value = 0;
+		if (node_evaluated) {
+			path_value = tree_node.get_child(i).node_value;
+		}
+
+		sprintf_s(edge_label, 16, "%u/%d", edge_index, node_evaluated ? path_value : -999);
 		DrawText(edge_label, (x1+x2)/2, (y1+y2)/2, 12, RED);
 
 		edge_index++;
@@ -112,8 +120,8 @@ void render_score(GameState& gameState) {
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Perform AlphaBeta search algo, gonna take a while I think..." << std::endl;
-	walk_tree_with_alphabeta(root, INT_MIN, INT_MAX);
+	std::cout << "Alpha/Betaing..." << std::endl;
+	walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
 
 	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
 	update_renderblocks(current_state.value.get_field());
@@ -133,6 +141,7 @@ int main(int argc, char* argv[])
 			/*auto edges = current_state.value.get_field().get_valid_edges();
 			auto e = edges[rand() % edges.size()].get();
 			states.push_back(states.back().perform_move(e));*/
+			walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
 			update_renderblocks(current_state.value.get_field());
 		}
 
@@ -144,7 +153,7 @@ int main(int argc, char* argv[])
 			//draw_field_edges(states.back().get_field());
 		//}
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
-		draw_field_edges(current_state.value.get_field());
+		draw_field_edges(current_state);
 		render_score(current_state.value);
 
 		EndDrawing();

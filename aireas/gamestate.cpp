@@ -3,7 +3,7 @@
 
 GameState::GameState()
 {
-	field = Field(3);
+	//field = Field(0);
 	current_player = GamePlayer::Player1;
 	status = GameStatus::Playing;
 	score_p1 = score_p2 = 0;
@@ -19,7 +19,11 @@ GameState::GameState(size_t field_size)
 
 GameState::GameState(const GameState& other)
 {
-	*this = other;
+	field = other.field;
+	current_player = other.current_player;
+	status = other.status;
+	score_p1 = other.score_p1;
+	score_p2 = other.score_p2;
 }
 
 GameState& GameState::operator=(const GameState & other)
@@ -40,12 +44,12 @@ GameState GameState::perform_move(Edge edge)
 	// and lets us walk the gamestate tree.
 
 	auto new_state = GameState();
-	perform_move_in_place(edge, new_state);
+	perform_move_to_place(edge, new_state);
 
 	return new_state;
 }
 
-GameState& GameState::perform_move_in_place(Edge edge, GameState& place) {
+void GameState::perform_move_to_place(Edge edge, GameState& place) {
 	place = *this;
 
 	// Change the edge to point to the new blocks
@@ -64,7 +68,7 @@ GameState& GameState::perform_move_in_place(Edge edge, GameState& place) {
 
 	place.current_player = place.current_player == GamePlayer::Player1 ? GamePlayer::Player2 : GamePlayer::Player1;
 
-	if (place.get_field().get_valid_edges().size() <= 1) {
+	if (place.get_field().get_valid_edge_count() <= 1) {
 		// Game ended!
 		if (place.score_p1 == place.score_p2) {
 			place.status = GameStatus::Draw;
@@ -72,6 +76,4 @@ GameState& GameState::perform_move_in_place(Edge edge, GameState& place) {
 			place.status = place.score_p1 > place.score_p2 ? GameStatus::Player1Victory : GameStatus::Player2Victory;
 		}
 	}
-
-	return place;
 }
