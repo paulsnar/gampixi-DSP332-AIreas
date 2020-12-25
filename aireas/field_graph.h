@@ -23,6 +23,9 @@ public:
 	bool combine_to(const Block& other);
 	const bool combine_test(const Block & other) const;
 	const tuple<int, int, int, int> get_dimensions() const;
+	const inline int get_area() const {
+		return w * h;
+	}
 	const inline bool get_active() const {
 		return this->active;
 	}
@@ -74,6 +77,9 @@ public:
 			return this->blocks.second < rhs.blocks.second;
 		}
 		return this->blocks.first < rhs.blocks.first;
+	}
+	const inline int get_score() const {
+		return blocks.first->get_area() + blocks.second->get_area();
 	}
 	inline Block* get_first() {
 		return this->blocks.first;

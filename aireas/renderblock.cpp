@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "renderblock.h"
 
+void RenderBlock::update_visibility(bool new_visibility)
+{
+	visible = new_visibility;
+}
+
 void RenderBlock::update_position(dims new_dims)
 {
 	// TODO: Tweening
@@ -18,7 +23,11 @@ void RenderBlock::update_color(Color new_color)
 	color = new_color;
 }
 
-void RenderBlock::render()
+void RenderBlock::render(float xoff, float yoff)
 {
-	DrawRectangleRec(rect, color);
+	if (!visible) return;
+	Rectangle final_rect = rect;
+	final_rect.x += xoff;
+	final_rect.y += yoff;
+	DrawRectangleRec(final_rect, color);
 }

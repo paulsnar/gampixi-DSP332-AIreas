@@ -55,8 +55,18 @@ GameState& GameState::perform_move_in_place(Edge edge, GameState& place) {
 	ptrdiff_t diff = (char*)place.field.get_block(0) - (char*)this->field.get_block(0);
 	edge.set_first((Block*)((char*)edge.get_first() + diff));
 	edge.set_second((Block*)((char*)edge.get_second() + diff));
+	auto edge_score = edge.get_score();
+	std::cout << "Move score: " << edge_score << std::endl;
 
-	place.field.merge_edge(edge);
+	if (place.field.merge_edge(edge)) {
+		if (place.current_player == GamePlayer::Player1) {
+			place.score_p1 += edge_score;
+		} else {
+			place.score_p2 += edge_score;
+		}
+	}
+
+	place.current_player = place.current_player == GamePlayer::Player1 ? GamePlayer::Player2 : GamePlayer::Player1;
 
 	return place;
 }

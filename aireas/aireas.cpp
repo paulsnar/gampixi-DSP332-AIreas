@@ -2,6 +2,8 @@
 //
 
 #include "pch.h"
+#include "aireas_defs.h"
+#include "renderblock.h"
 #include "field_graph.h"
 #include "gamestate.h"
 #include "raylib.h"
@@ -10,9 +12,10 @@
 #include <ctime>
 #include <vector>
 
-
-
 using std::tuple;
+
+std::vector<RenderBlock> renderblocks;
+std::vector<GameState> states;
 
 tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
 	int x, y, w, h;
@@ -64,51 +67,72 @@ void draw_field_edges(Field& field) {
 	}
 }
 
+void update_renderblocks(Field& field) {
+	for (size_t i = 0; i < field.get_blocks_size(); i++) {
+		if (renderblocks.size() <= i) {
+			renderblocks.push_back(RenderBlock());
+		}
+		const Block* b = field.get_block(i);
+		renderblocks[i].update_visibility(b->get_active());
+		renderblocks[i].update_position(b->get_dimensions());
+		renderblocks[i].update_color(GREEN);
+	}
+}
+
+void render_renderblocks(float x_offset, float y_offset) {
+	for (auto& b : renderblocks) {
+		b.render(x_offset, y_offset);
+	}
+}
+
+void render_score(GameState& gameState) {
+	static char player1_text[32] = "YOU: 0";
+	static char player2_text[32] = "AI: 0";
+
+	sprintf_s(player1_text, 32, "YOU: %u", gameState.get_score(GamePlayer::Player1));
+	sprintf_s(player2_text, 32, "AI: %u", gameState.get_score(GamePlayer::Player2));
+
+	DrawText(player1_text, SCREEN_SIZE_X / 2, 20, 24, DARKGRAY);
+	DrawText(player2_text, SCREEN_SIZE_X / 2, 50, 24, DARKGRAY);
+}
+
 int main(int argc, char* argv[])
 {
-	std::vector<GameState> states;
+	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
+
 	states.reserve(100);
-	states.push_back(GameState(3)); // Initial game state
+	states.push_back(GameState(FIELD_DIMENSION)); // Initial game state
+	update_renderblocks(states.back().get_field());
+
 	std::srand(std::time(NULL));
 
-	// Initialization
-	//--------------------------------------------------------------------------------------
-	int screenWidth = 800;
-	int screenHeight = 450;
-
+	int screenWidth = SCREEN_SIZE_X;
+	int screenHeight = SCREEN_SIZE_Y;
 	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
 
 	SetTargetFPS(60);
-	//--------------------------------------------------------------------------------------
-	
-	// Main game loop
+
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		// Update
-		//----------------------------------------------------------------------------------
-		// TODO: Update your variables here
-		//----------------------------------------------------------------------------------
+		if (IsKeyPressed(KEY_SPACE)) {
+			auto edges = states.back().get_field().get_valid_edges();
+			auto e = edges[rand() % edges.size()].get();
+			states.push_back(states.back().perform_move(e));
+			update_renderblocks(states.back().get_field());
+		}
 
-		// Draw
-		//----------------------------------------------------------------------------------
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 
 		//for (size_t i = 0; i < fields.size(); i++) {
-			draw_field(states.back().get_field());
-			draw_field_edges(states.back().get_field());
+			//draw_field(states.back().get_field());
+			//draw_field_edges(states.back().get_field());
 		//}
-
-		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
+		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
+		draw_field_edges(states.back().get_field());
+		render_score(states.back());
 
 		EndDrawing();
-
-		if (IsKeyPressed(KEY_SPACE)) {
-			auto edges = states.back().get_field().get_valid_edges();
-  			auto e = edges[rand() % edges.size()].get();
-			states.push_back(states.back().perform_move(e));
-		}
-		//----------------------------------------------------------------------------------
 	}
 
 	// De-Initialization
