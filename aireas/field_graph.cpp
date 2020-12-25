@@ -31,7 +31,6 @@ Field::Field() {
 
 Field::Field(size_t n)
 {
-	std::cout << "Construct field base" << std::endl;
 	this->blocks_size = n * n;
 	this->blocks_size_n = n;
 	this->blocks = new Block[this->blocks_size];
@@ -56,20 +55,17 @@ Field::Field(size_t n)
 
 Field::Field(const Field & other)
 {
-	std::cout << "Construct field copy" << std::endl;
 	*this = other;
 }
 
 Field::~Field()
 {
-	std::cout << "Destruct field" << std::endl;
 	delete[] this->blocks;
 }
 
 Field& Field::operator=(const Field & other)
 {
 	if (this == &other) return *this;
-	std::cout << "Assign field (copy)" << std::endl;
 
 	this->blocks_size = other.blocks_size;
 	this->blocks_size_n = other.blocks_size_n;

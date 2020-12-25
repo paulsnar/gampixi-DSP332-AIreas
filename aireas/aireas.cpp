@@ -89,8 +89,20 @@ void render_score(GameState& gameState) {
 	static char player1_text[32] = "YOU: 0";
 	static char player2_text[32] = "AI: 0";
 
-	sprintf_s(player1_text, 32, "YOU: %u", gameState.get_score(GamePlayer::Player1));
-	sprintf_s(player2_text, 32, "AI: %u", gameState.get_score(GamePlayer::Player2));
+	if (gameState.get_status() == GameStatus::Playing) {
+		sprintf_s(player1_text, 32, "YOU: %u", gameState.get_score(GamePlayer::Player1));
+		sprintf_s(player2_text, 32, "AI: %u", gameState.get_score(GamePlayer::Player2));
+	} else if (gameState.get_status() != GameStatus::Draw) {
+		sprintf_s(player1_text, 32, "YOU %s: %u", 
+			gameState.get_status() == GameStatus::Player1Victory ? "WIN" : "LOSE",
+			gameState.get_score(GamePlayer::Player1));
+		sprintf_s(player2_text, 32, "AI %s: %u",
+			gameState.get_status() == GameStatus::Player2Victory ? "WIN" : "LOSE",
+			gameState.get_score(GamePlayer::Player2));
+	} else {
+		sprintf_s(player1_text, 32, "YOU DRAW: %u", gameState.get_score(GamePlayer::Player1));
+		sprintf_s(player2_text, 32, "AI DRAW: %u", gameState.get_score(GamePlayer::Player2));
+	}
 
 	DrawText(player1_text, SCREEN_SIZE_X / 2, 20, 24, DARKGRAY);
 	DrawText(player2_text, SCREEN_SIZE_X / 2, 50, 24, DARKGRAY);
