@@ -126,7 +126,7 @@ bool Field::merge_edge(Edge& edge)
 
 	// 2) Remove edge which was the move done
 
-	this->edges.erase(std::remove(this->edges.begin(), this->edges.end(), edge));
+	this->edges.erase(std::remove(this->edges.begin(), this->edges.end(), edge), this->edges.end());
 
 	// 3) Remove overlapping edges (duplicates)
 	

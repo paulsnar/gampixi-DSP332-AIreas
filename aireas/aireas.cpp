@@ -3,14 +3,14 @@
 
 #include "pch.h"
 #include "field_graph.h"
+#include "gamestate.h"
 #include "raylib.h"
 #include <tuple>
 #include <cstdlib>
 #include <ctime>
 #include <vector>
 
-constexpr unsigned int BLOCK_DRAW_SIZE = 30;
-constexpr unsigned int BLOCK_PADDING = 5;
+
 
 using std::tuple;
 
@@ -66,9 +66,9 @@ void draw_field_edges(Field& field) {
 
 int main(int argc, char* argv[])
 {
-	std::vector<Field> fields;
-	fields.reserve(100);
-	fields.push_back(Field(3));
+	std::vector<GameState> states;
+	states.reserve(100);
+	states.push_back(GameState(3)); // Initial game state
 	std::srand(std::time(NULL));
 
 	// Initialization
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
 		ClearBackground(RAYWHITE);
 
 		//for (size_t i = 0; i < fields.size(); i++) {
-			draw_field(fields.back());
-			draw_field_edges(fields.back());
+			draw_field(states.back().get_field());
+			draw_field_edges(states.back().get_field());
 		//}
 
 		DrawText("boo hoo this is very empty", 190, 200, 20, LIGHTGRAY);
@@ -104,10 +104,9 @@ int main(int argc, char* argv[])
 		EndDrawing();
 
 		if (IsKeyPressed(KEY_SPACE)) {
-			auto field_copy = fields.back();
-			auto edges = field_copy.get_valid_edges();
-  			field_copy.merge_edge(edges[rand() % edges.size()].get());
-			fields.push_back(field_copy);
+			auto edges = states.back().get_field().get_valid_edges();
+  			auto e = edges[rand() % edges.size()].get();
+			states.push_back(states.back().perform_move(e));
 		}
 		//----------------------------------------------------------------------------------
 	}

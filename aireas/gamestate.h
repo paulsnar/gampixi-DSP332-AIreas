@@ -1,6 +1,7 @@
 #pragma once
 
 #include "field_graph.h"
+#include <iostream>
 
 enum GamePlayer {
 	Player1,
@@ -20,7 +21,8 @@ public:
 	GameState(size_t field_size);
 	GameState(const GameState& other);
 	GameState& operator=(const GameState& other);
-	GameState& perform_move(Edge& edge);
+	GameState perform_move(Edge edge);
+	GameState & perform_move_in_place(Edge edge, GameState & place);
 	inline const GamePlayer get_current_player() const {
 		return current_player;
 	}
@@ -30,7 +32,7 @@ public:
 	inline const unsigned int get_score(GamePlayer for_player) const {
 		return for_player == GamePlayer::Player1 ? score_p1 : score_p2;
 	}
-	inline const Field& get_field() {
+	inline Field& get_field() {
 		return field;
 	}
 private:
