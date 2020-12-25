@@ -5,6 +5,7 @@
 #include "aireas_defs.h"
 #include "renderblock.h"
 #include "field_graph.h"
+#include "state_tree.h"
 #include "gamestate.h"
 #include "raylib.h"
 #include <tuple>
@@ -15,7 +16,8 @@
 using std::tuple;
 
 std::vector<RenderBlock> renderblocks;
-std::vector<GameState> states;
+StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
+StateTreeNode& current_state = root;
 
 tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
 	int x, y, w, h;
@@ -110,11 +112,11 @@ void render_score(GameState& gameState) {
 
 int main(int argc, char* argv[])
 {
-	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
+	std::cout << "Generate tree up to depth 5, because why the hell not." << std::endl;
+	walk_tree_with_depth(current_state, 5);
 
-	states.reserve(100);
-	states.push_back(GameState(FIELD_DIMENSION)); // Initial game state
-	update_renderblocks(states.back().get_field());
+	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
+	update_renderblocks(current_state.value.get_field());
 
 	std::srand(std::time(NULL));
 
@@ -127,10 +129,11 @@ int main(int argc, char* argv[])
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		if (IsKeyPressed(KEY_SPACE)) {
-			auto edges = states.back().get_field().get_valid_edges();
+			current_state = current_state.get_child(rand() % current_state.get_child_count());
+			/*auto edges = current_state.value.get_field().get_valid_edges();
 			auto e = edges[rand() % edges.size()].get();
-			states.push_back(states.back().perform_move(e));
-			update_renderblocks(states.back().get_field());
+			states.push_back(states.back().perform_move(e));*/
+			update_renderblocks(current_state.value.get_field());
 		}
 
 		BeginDrawing();
@@ -141,8 +144,8 @@ int main(int argc, char* argv[])
 			//draw_field_edges(states.back().get_field());
 		//}
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
-		draw_field_edges(states.back().get_field());
-		render_score(states.back());
+		draw_field_edges(current_state.value.get_field());
+		render_score(current_state.value);
 
 		EndDrawing();
 	}

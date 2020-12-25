@@ -154,6 +154,7 @@
     <ClInclude Include="aireas_defs.h" />
     <ClInclude Include="field_graph.h" />
     <ClInclude Include="gamestate.h" />
+    <ClInclude Include="state_tree.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="renderblock.h" />
   </ItemGroup>
@@ -168,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="renderblock.cpp" />
+    <ClCompile Include="state_tree.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
