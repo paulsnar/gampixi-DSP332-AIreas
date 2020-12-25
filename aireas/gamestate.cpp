@@ -64,7 +64,7 @@ GameState& GameState::perform_move_in_place(Edge edge, GameState& place) {
 
 	place.current_player = place.current_player == GamePlayer::Player1 ? GamePlayer::Player2 : GamePlayer::Player1;
 
-	if (place.get_field().get_valid_edges().size() <= 0) {
+	if (place.get_field().get_valid_edges().size() <= 1) {
 		// Game ended!
 		if (place.score_p1 == place.score_p2) {
 			place.status = GameStatus::Draw;

@@ -22,7 +22,7 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 	next = vector<StateTreeNode>();
 	next.reserve(parsed.size());
 
-	if (parsed.size() <= 0) {
+	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
 		// The more we win (larger score delta), the better
 		node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
@@ -62,7 +62,7 @@ void walk_tree_with_depth(StateTreeNode & from, size_t depth)
 
 int walk_tree_with_alphabeta(StateTreeNode & from, int alpha, int beta)
 {
-	if (from.get_child_count() <= 0) {
+	if (from.value.get_status() != GameStatus::Playing) {
 		std::cout << "Reached end, score " << from.value.get_score(GamePlayer::Player1) << " | "
 			<< from.value.get_score(GamePlayer::Player2) << std::endl;
 		return from.node_value;
