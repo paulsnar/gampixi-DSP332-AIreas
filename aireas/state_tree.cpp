@@ -58,6 +58,39 @@ StateTreeNode & StateTreeNode::get_child(size_t idx)
 	return next.at(idx);
 }
 
+StateTreeNode & StateTreeNode::best_child()
+{
+	// Choose the best node. If multiple nodes have the same heuristic value, choose randomly one of the best.
+	int best_indexes_value = value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
+	auto best_indexes = vector<size_t>();
+
+	for (size_t i = 0; i < next.size(); i++) {
+		if (value.get_current_player() == GamePlayer::Player1) {
+			// Maximizing
+			int this_value = next.at(i).node_value;
+			if (this_value > best_indexes_value) {
+				best_indexes.clear();
+				best_indexes_value = this_value;
+			}
+			if (this_value == best_indexes_value) {
+				best_indexes.push_back(i);
+			}
+		} else {
+			// Minimizing
+			int this_value = next.at(i).node_value;
+			if (this_value < best_indexes_value) {
+				best_indexes.clear();
+				best_indexes_value = this_value;
+			}
+			if (this_value == best_indexes_value) {
+				best_indexes.push_back(i);
+			}
+		}
+	}
+
+	return next.at(best_indexes[rand() % best_indexes.size()]);
+}
+
 /*
 Some ground rules:
 Player1 is maximizer, Player2 is minimizer.

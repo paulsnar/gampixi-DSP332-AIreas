@@ -4,6 +4,9 @@
 bool RenderBlock::matches_block(Block* other)
 {
 	if (block != nullptr) {
+		if (!block->get_active()) {
+			return false;
+		}
 		return other == block;
 	}
 
@@ -32,12 +35,12 @@ void RenderBlock::reset_linked()
 	linked = vector<RenderBlockLink>();
 }
 
-void RenderBlock::add_link(Edge& link, RenderBlock* other)
+void RenderBlock::add_link(size_t link_idx, RenderBlock* other)
 {
 	// Don't check if the link is valid, that's the caller's responsibiliy.
 	RenderBlockLink rbl;
 	rbl.block = other;
-	rbl.edge = &link;
+	rbl.edge_idx = link_idx;
 
 	linked.push_back(rbl);
 }

@@ -1,10 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 #include "aireas_defs.h"
 #include "gamestate.h"
 
 using std::vector;
+using std::pair;
+using std::make_pair;
 
 class StateTreeNode {
 public:
@@ -19,6 +22,7 @@ public:
 		return parsed.at(idx);
 	}
 	StateTreeNode& get_child(size_t idx);
+	StateTreeNode& best_child();
 private:
 	vector<bool> parsed; // True, if we have fully generated the next tree node. Might be false because of pruning.
 	// Next indexes should match value->field->valid_edges indexes. That way by performing a move, we really
