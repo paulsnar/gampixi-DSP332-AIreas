@@ -45,7 +45,11 @@ void draw_field(const Field& field) {
 	}
 }
 
-void draw_field_edges(StateTreeNode& tree_node) {
+void draw_debug(StateTreeNode& tree_node) {
+	char extra_label[16];
+	sprintf_s(extra_label, 16, "%s", tree_node.value.get_current_player() == GamePlayer::Player1 ? "MAX" : "MIN");
+	DrawText(extra_label, 5, 5, 12, RED);
+
 	unsigned int edge_index = 0;
 	auto edges = tree_node.value.get_field().get_valid_edges();
 	for (size_t i = 0; i < edges.size(); i++) {
@@ -59,6 +63,9 @@ void draw_field_edges(StateTreeNode& tree_node) {
 		y1 += h1 / 2;
 		x2 += w2 / 2;
 		y2 += h2 / 2;
+
+		y1 += 30;
+		y2 += 30;
 
 		DrawLine(x1, y1, x2, y2, DARKBLUE);
 
@@ -153,7 +160,7 @@ int main(int argc, char* argv[])
 			//draw_field_edges(states.back().get_field());
 		//}
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
-		draw_field_edges(current_state.get());
+		draw_debug(current_state.get());
 		render_score(current_state.get().value);
 
 		EndDrawing();
@@ -164,5 +171,6 @@ int main(int argc, char* argv[])
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
 
+	std::quick_exit(0); // The destructors take a long time, just let the OS clean up this mess :/
 	return 0;
 }
