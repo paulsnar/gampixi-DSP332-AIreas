@@ -73,8 +73,10 @@ void draw_debug(StateTreeNode& tree_node) {
 		x2 += w2 / 2;
 		y2 += h2 / 2;
 
-		y1 += 30;
-		y2 += 30;
+		x1 += FIELD_OFFSET_CENTERED_X;
+		x2 += FIELD_OFFSET_CENTERED_X;
+		y1 += FIELD_OFFSET_CENTERED_Y;
+		y2 += FIELD_OFFSET_CENTERED_Y;
 
 		DrawLine(x1, y1, x2, y2, DARKBLUE);
 
@@ -137,31 +139,30 @@ void update_renderblocks(Field& field) {
 
 void render_renderblocks(float x_offset, float y_offset) {
 	for (auto& b : renderblocks) {
-		b.render(x_offset, y_offset, true);
+		b.render(x_offset, y_offset, false);
 	}
 }
 
 void render_score(GameState& gameState) {
-	static char player1_text[32] = "YOU: 0";
-	static char player2_text[32] = "AI: 0";
+	static char score_text[50] = "kappa123";
 
-	if (gameState.get_status() == GameStatus::Playing) {
-		sprintf_s(player1_text, 32, "YOU: %u", gameState.get_score(GamePlayer::Player1));
-		sprintf_s(player2_text, 32, "AI: %u", gameState.get_score(GamePlayer::Player2));
-	} else if (gameState.get_status() != GameStatus::Draw) {
-		sprintf_s(player1_text, 32, "YOU %s: %u", 
-			gameState.get_status() == GameStatus::Player1Victory ? "WIN" : "LOSE",
-			gameState.get_score(GamePlayer::Player1));
-		sprintf_s(player2_text, 32, "AI %s: %u",
-			gameState.get_status() == GameStatus::Player2Victory ? "WIN" : "LOSE",
-			gameState.get_score(GamePlayer::Player2));
-	} else {
-		sprintf_s(player1_text, 32, "YOU DRAW: %u", gameState.get_score(GamePlayer::Player1));
-		sprintf_s(player2_text, 32, "AI DRAW: %u", gameState.get_score(GamePlayer::Player2));
+	int human_score = ai_player == GamePlayer::Player1 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
+	int ai_score = ai_player == GamePlayer::Player2 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
+
+	sprintf_s(score_text, 50, "%d %s | %s %d", human_score, STR_YOU, STR_AI, ai_score);
+	int t_width = MeasureText(score_text, 24);
+	int t_x = (SCREEN_SIZE_X - t_width) / 2;
+
+	DrawText(score_text, t_x+1, 20+1, 24, DARKGRAY); // Shadow
+	DrawText(score_text, t_x, 20, 24, LIGHTGRAY);
+
+	if (ai_player != gameState.get_current_player()) {
+		int tg_width = MeasureText(STR_YOUR_MOVE, 18);
+		int tg_x = (SCREEN_SIZE_X - tg_width) / 2;
+		DrawText(STR_YOUR_MOVE, tg_x + 1, 50 + 1, 18, DARKGRAY); // Shadow
+		DrawText(STR_YOUR_MOVE, tg_x, 50, 18, LIGHTGRAY);
 	}
-
-	DrawText(player1_text, SCREEN_SIZE_X / 2, 20, 24, DARKGRAY);
-	DrawText(player2_text, SCREEN_SIZE_X / 2, 50, 24, DARKGRAY);
+	
 }
 
 void process_inputs() {
@@ -263,7 +264,7 @@ void perform_ai_move() {
 	srand(time(NULL) + std::hash<std::thread::id>{}(std::this_thread::get_id()));
 	if (&current_state.get() == &root) {
 		// First move!
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		std::vector<size_t> best_moves;
 		if (FIELD_DIMENSION == 4) {
 			best_moves = {3,5,7,14,11,18,17,19};
@@ -334,11 +335,11 @@ int main(int argc, char* argv[])
 
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
 		render_score(current_state.get().value);
-		draw_debug(current_state.get());
 
 		if (ui_state == UiState::Calculating) {
 			// Draw calculating UI
 			Vector2 ringCenter;
+			draw_debug(current_state.get());
 			ringCenter.x = 30;
 			ringCenter.y = SCREEN_SIZE_Y - 30;
 			double angle1 = -360.0 * GetTime() * 2;

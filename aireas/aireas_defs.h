@@ -15,8 +15,8 @@ constexpr unsigned int SCREEN_SIZE_Y = 480;
 constexpr bool MAN_IR_DAUDZ_RAM = true; // Akadēmiski-korektā versija
 
 constexpr unsigned int FIELD_DIMENSION = 4;
-constexpr unsigned int BLOCK_DRAW_SIZE = 30;
-constexpr unsigned int BLOCK_PADDING = 5;
+constexpr unsigned int BLOCK_DRAW_SIZE = 50;
+constexpr unsigned int BLOCK_PADDING = 10;
 constexpr unsigned int FIELD_OFFSET_CENTERED_X =
 	(SCREEN_SIZE_X - (FIELD_DIMENSION * BLOCK_DRAW_SIZE + (FIELD_DIMENSION - 1) * BLOCK_PADDING)) / 2;
 constexpr unsigned int FIELD_OFFSET_CENTERED_Y =
@@ -24,7 +24,6 @@ constexpr unsigned int FIELD_OFFSET_CENTERED_Y =
 
 constexpr unsigned int END_POPUP_W = 500;
 constexpr unsigned int END_POPUP_H = 120;
-
 
 constexpr unsigned int END_POPUP_X = (SCREEN_SIZE_X - END_POPUP_W) / 2;
 constexpr unsigned int END_POPUP_Y = SCREEN_SIZE_Y - END_POPUP_H - 50;
@@ -48,7 +47,10 @@ enum Language {
 
 constexpr Language LANGUAGE = Language::Latvian;
 constexpr auto STR_CALCULATING = LANGUAGE == Language::English ? "Calculating..." : "Aprekina...";
-constexpr auto STR_END_LOST = LANGUAGE == Language::English ? "You lost!" : "Tu zaudeji!";
+constexpr auto STR_YOU = LANGUAGE == Language::English ? "You" : "Tu";
+constexpr auto STR_AI = LANGUAGE == Language::English ? "AI" : "Dators";
+constexpr auto STR_YOUR_MOVE = LANGUAGE == Language::English ? "Your move" : "Tavs gajiens";
+constexpr auto STR_END_LOST = LANGUAGE == Language::English ? "You lost!" : "Dators uzvareja!";
 constexpr auto STR_END_DRAW = LANGUAGE == Language::English ? "Draw!" : "Neizskirts!";
 constexpr auto STR_END_WON = LANGUAGE == Language::English ? "You won!" : "Tu uzvareji!";
 constexpr auto STR_END_LOST_FLAIR = LANGUAGE == Language::English
@@ -56,6 +58,6 @@ constexpr auto STR_END_LOST_FLAIR = LANGUAGE == Language::English
 constexpr auto STR_END_DRAW_FLAIR = LANGUAGE == Language::English
 ? "You were so close to winning" : "Tik tuvu, un tomer tik talu";
 constexpr auto STR_END_WON_FLAIR = LANGUAGE == Language::English
-? "I'll just mention that the first player has an advantage" : "Pirms sapriecajies, but pirmajam ir vieglak :)";
+? "I'll just mention that the first player has an advantage" : "Starp citu, but pirmajam ir vieglak :)";
 constexpr auto STR_RESTART_HINT = LANGUAGE == Language::English
 ? "Click anywhere to continue" : "Noklikskini, lai turpinatu";
