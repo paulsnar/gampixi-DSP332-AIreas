@@ -30,6 +30,8 @@ constexpr unsigned int END_POPUP_Y = SCREEN_SIZE_Y - END_POPUP_H - 50;
 
 constexpr Color BACKGROUND_COLOR = Color { 36, 36, 36, 255 };
 
+constexpr double BLOCK_TWEEN_LENGTH_RECT = 0.25;
+constexpr double BLOCK_TWEEN_LENGTH_COLOR = 0.15;
 constexpr Color BLOCK_COLOR_OUTLINE = Color {134, 207, 154, 255};
 constexpr Color BLOCK_COLOR_NORMAL = GREEN;
 constexpr Color BLOCK_COLOR_HOVER = DARKGREEN;

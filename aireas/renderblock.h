@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "field_graph.h"
 #include <vector>
+#include "easings.h"
 
 using std::tuple;
 
@@ -36,6 +37,10 @@ private:
 	Block* block = nullptr;
 	bool visible;
 	int xg, yg, wg, hg;
+	Rectangle prev_rect;
+	double prev_rect_time = 0;
 	Rectangle rect;
+	Color prev_color;
+	double prev_color_time = 0;
 	Color color;
 };

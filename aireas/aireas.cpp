@@ -107,8 +107,10 @@ void update_renderblocks(Field& field) {
 		renderblocks[i].assign_block(b);
 		renderblocks[i].reset_linked();
 		renderblocks[i].update_visibility(b->get_active());
-		renderblocks[i].update_position(b->get_dimensions());
-		renderblocks[i].update_color(GREEN);
+		if (b->get_active()) {
+			renderblocks[i].update_position(b->get_dimensions());
+			renderblocks[i].update_color(GREEN);
+		}
 	}
 
 	// Add links to newly updated renderblocks that will be used to handle move input.
@@ -294,7 +296,7 @@ void perform_ai_move() {
 	srand(time(NULL) + std::hash<std::thread::id>{}(std::this_thread::get_id()));
 	if (&current_state.get() == &root) {
 		// First move!
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		std::vector<size_t> best_moves;
 		if (FIELD_DIMENSION == 4) {
 			best_moves = {3,5,7,14,11,18,17,19};
