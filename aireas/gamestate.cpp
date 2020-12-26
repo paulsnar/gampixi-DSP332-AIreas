@@ -76,4 +76,7 @@ void GameState::perform_move_to_place(Edge edge, GameState& place) {
 			place.status = place.score_p1 > place.score_p2 ? GameStatus::Player1Victory : GameStatus::Player2Victory;
 		}
 	}
+	else {
+		place.status = GameStatus::Playing;
+	}
 }

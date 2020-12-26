@@ -13,6 +13,7 @@
 #include <ctime>
 #include <vector>
 #include <thread>
+#include <chrono>
 
 using std::tuple;
 using std::min;
@@ -23,7 +24,7 @@ StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
 auto current_state = std::ref(root);
 
 auto ui_state = UiState::PickFirst;
-auto ai_player = GamePlayer::Player2;
+auto ai_player = GamePlayer::Player1;
 RenderBlock* pick_first = nullptr;
 RenderBlock* pick_second = nullptr;
 
@@ -83,9 +84,11 @@ void draw_debug(StateTreeNode& tree_node) {
 		int path_value = 0;
 		if (node_evaluated) {
 			path_value = tree_node.get_child(i).node_value;
+			sprintf_s(edge_label, 16, "%u/%d", edge_index, path_value);
+		} else {
+			sprintf_s(edge_label, 16, "%u/N", edge_index);
 		}
 
-		sprintf_s(edge_label, 16, "%u/%d", edge_index, node_evaluated ? path_value : -999);
 		DrawText(edge_label, (x1+x2)/2, (y1+y2)/2, 12, RED);
 
 		edge_index++;
@@ -251,9 +254,22 @@ void process_inputs() {
 }
 
 void perform_ai_move() {
-	walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
-	// Perform one from the best moves
-	current_state = std::ref(current_state.get().best_child());
+	srand(time(NULL) + std::hash<std::thread::id>{}(std::this_thread::get_id()));
+	if (&current_state.get() == &root) {
+		// First move!
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::vector<size_t> best_moves;
+		if (FIELD_DIMENSION == 4) {
+			best_moves = {3,5,7,14,11,18,17,19};
+		}
+		current_state = std::ref(current_state.get().get_child(best_moves[rand() % best_moves.size()]));
+	}
+	else {
+		walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
+		// Perform one from the best moves
+		current_state = std::ref(current_state.get().best_child());
+	}
+
 	update_renderblocks(current_state.get().value.get_field());
 	ui_state = UiState::PickFirst;
 }
@@ -324,10 +340,9 @@ int main(int argc, char* argv[])
 
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
 		render_score(current_state.get().value);
+		draw_debug(current_state.get());
 
 		if (ui_state == UiState::Calculating) {
-			draw_debug(current_state.get());
-
 			// Draw calculating UI
 			Vector2 ringCenter;
 			ringCenter.x = 30;

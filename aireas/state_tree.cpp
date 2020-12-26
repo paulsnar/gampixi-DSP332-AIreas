@@ -74,6 +74,7 @@ StateTreeNode & StateTreeNode::best_child()
 				std::cout << "New best index: " << best_indexes_value << std::endl;
 			}
 			if (this_value == best_indexes_value) {
+				std::cout << "Added: " << best_indexes_value << ", idx: " << i << std::endl;
 				best_indexes.push_back(i);
 			}
 		} else {
@@ -85,6 +86,7 @@ StateTreeNode & StateTreeNode::best_child()
 				std::cout << "New best index: " << best_indexes_value << std::endl;
 			}
 			if (this_value == best_indexes_value) {
+				std::cout << "Added: " << best_indexes_value << ", idx: " << i << std::endl;
 				best_indexes.push_back(i);
 			}
 		}
@@ -125,13 +127,14 @@ int walk_tree_with_alphabeta(StateTreeNode & from, int alpha, int beta)
 		return from.node_value;
 	}
 
+	from.node_value = from.value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
 	if (from.value.get_current_player() == GamePlayer::Player1) {
 		// Maximizer
 		for (size_t i = 0; i < from.get_child_count(); i++) {
 			from.node_value = max(from.node_value, walk_tree_with_alphabeta(from.get_child(i), alpha, beta));
 			alpha = max(alpha, from.node_value);
 			if (alpha >= beta) {
-				break; // Alpha cutodff
+				break; // Beta cutodff
 			}
 		}
 		return from.node_value;
@@ -141,7 +144,7 @@ int walk_tree_with_alphabeta(StateTreeNode & from, int alpha, int beta)
 			from.node_value = min(from.node_value, walk_tree_with_alphabeta(from.get_child(i), alpha, beta));
 			beta = min(beta, from.node_value);
 			if (beta <= alpha) {
-				break; // Beta cutodff
+				break; // Alpha cutodff
 			}
 		}
 		return from.node_value;
