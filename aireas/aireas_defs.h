@@ -22,6 +22,13 @@ constexpr unsigned int FIELD_OFFSET_CENTERED_X =
 constexpr unsigned int FIELD_OFFSET_CENTERED_Y =
 	(SCREEN_SIZE_Y - (FIELD_DIMENSION * BLOCK_DRAW_SIZE + (FIELD_DIMENSION - 1) * BLOCK_PADDING)) / 2;
 
+constexpr unsigned int END_POPUP_W = 500;
+constexpr unsigned int END_POPUP_H = 120;
+
+
+constexpr unsigned int END_POPUP_X = (SCREEN_SIZE_X - END_POPUP_W) / 2;
+constexpr unsigned int END_POPUP_Y = SCREEN_SIZE_Y - END_POPUP_H - 50;
+
 constexpr Color BLOCK_COLOR_NORMAL = GREEN;
 constexpr Color BLOCK_COLOR_HOVER = DARKGREEN;
 constexpr Color BLOCK_COLOR_LINKED = BLUE;
@@ -41,3 +48,14 @@ enum Language {
 
 constexpr Language LANGUAGE = Language::Latvian;
 constexpr auto STR_CALCULATING = LANGUAGE == Language::English ? "Calculating..." : "Aprekina...";
+constexpr auto STR_END_LOST = LANGUAGE == Language::English ? "You lost!" : "Tu zaudeji!";
+constexpr auto STR_END_DRAW = LANGUAGE == Language::English ? "Draw!" : "Neizskirts!";
+constexpr auto STR_END_WON = LANGUAGE == Language::English ? "You won!" : "Tu uzvareji!";
+constexpr auto STR_END_LOST_FLAIR = LANGUAGE == Language::English
+? "Better luck next time" : "Nakamreiz paveiksies!";
+constexpr auto STR_END_DRAW_FLAIR = LANGUAGE == Language::English
+? "You were so close to winning" : "Tik tuvu, un tomer tik talu";
+constexpr auto STR_END_WON_FLAIR = LANGUAGE == Language::English
+? "I'll just mention that the first player has an advantage" : "Pirms sapriecajies, but pirmajam ir vieglak :)";
+constexpr auto STR_RESTART_HINT = LANGUAGE == Language::English
+? "Click anywhere to continue" : "Noklikskini, lai turpinatu";

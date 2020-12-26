@@ -25,9 +25,9 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 
 	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
-		// The more we win (larger score delta), the better
 		if constexpr (MAN_IR_DAUDZ_RAM == true) {
-			switch (value.get_status()) {
+			// The more complex the board is, the better the node, basically, move to a victory that's harder to decipher
+			/*switch (value.get_status()) {
 			case GameStatus::Player1Victory:
 				node_value = value.get_field().get_block_count();
 				break;
@@ -39,9 +39,10 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 			default:
 				node_value = 0;
 				break;
-			}
+			}*/
 			//node_value = value.get_field().get_block_count() * (value.get_status == GamePlayer::Player1 ? 1 : -1);
-			//node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
+			node_value = value.get_field().get_block_count() * 
+				((int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2));
 		} else {
 			switch (value.get_status()) {
 			case GameStatus::Player1Victory:
@@ -111,7 +112,8 @@ StateTreeNode & StateTreeNode::best_child()
 		std::cout << i << " ";
 	}
 	std::cout << std::endl;
-	return next.at(best_indexes[rand() % best_indexes.size()]);
+	//return next.at(best_indexes[rand() % best_indexes.size()]);
+	return next.at(best_indexes[0]);
 }
 
 /*
@@ -157,7 +159,7 @@ int walk_tree_with_alphabeta(StateTreeNode & from, int alpha, int beta)
 		for (size_t i = 0; i < from.get_child_count(); i++) {
 			from.node_value = min(from.node_value, walk_tree_with_alphabeta(from.get_child(i), alpha, beta));
 			beta = min(beta, from.node_value);
-			if (beta <= alpha) {
+			if (alpha >= beta) {
 				break; // Alpha cutodff
 			}
 		}

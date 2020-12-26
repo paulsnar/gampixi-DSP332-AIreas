@@ -249,6 +249,12 @@ void process_inputs() {
 		}
 		break;
 	case UiState::Finished:
+		if (IsMouseButtonPressed(0)) {
+			current_state = std::ref(root);
+			update_renderblocks(current_state.get().value.get_field());
+			ai_player = ai_player == GamePlayer::Player1 ? GamePlayer::Player2 : GamePlayer::Player1;
+			ui_state = UiState::PickFirst;
+		}
 		break;
 	}
 }
@@ -281,10 +287,6 @@ int main(int argc, char* argv[])
 	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
 	SetTargetFPS(60);
 
-	// Generate the first few subtrees to make subsequent alpha-beta calls faster.
-	// walk_tree_with_depth(current_state, 4);
-	// walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
-
 	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
 	update_renderblocks(current_state.get().value.get_field());
 
@@ -297,17 +299,15 @@ int main(int argc, char* argv[])
 		}
 
 		if (ui_state != UiState::Calculating) {
+			process_inputs();
 			bool is_ai_move = current_state.get().value.get_current_player() == ai_player;
 			if (!is_ai_move) {
-				process_inputs();
-
 				if (pick_first != nullptr && pick_second != nullptr) {
 					// Both blocks have been picked - perform move!
 					for (auto& other : pick_first->linked) {
 						if (other.block == pick_second) {
 							// This is the correct move to execute.
 							current_state = std::ref(current_state.get().get_child(other.edge_idx));
-							//walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
 							update_renderblocks(current_state.get().value.get_field());
 							pick_first = nullptr;
 							pick_second = nullptr;
@@ -328,12 +328,6 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-		
-		/*if (IsKeyPressed(KEY_SPACE)) {
-			current_state = std::ref(current_state.get().get_child(rand() % current_state.get().get_child_count()));
-			walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
-			update_renderblocks(current_state.get().value.get_field());
-		}*/
 
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
@@ -347,8 +341,6 @@ int main(int argc, char* argv[])
 			Vector2 ringCenter;
 			ringCenter.x = 30;
 			ringCenter.y = SCREEN_SIZE_Y - 30;
-			//double angle1 = -180 + std::remainder(360.0 * GetTime(), 360.0);
-			//double angle2 = -180 + std::remainder(360.0 * GetTime() + 135, 360.0);
 			double angle1 = -360.0 * GetTime() * 2;
 			double angle2 = -360.0 * (GetTime() + std::sin(GetTime() * 5) * 0.1) * 2 + 135;
 			DrawRing(ringCenter, 8, 12, min(angle1, angle2), max(angle1, angle2), 16, LIGHTGRAY);
@@ -356,6 +348,40 @@ int main(int argc, char* argv[])
 		}
 		if (ui_state == UiState::Finished) {
 			// Draw finish UI, let restart
+			DrawRectangle(END_POPUP_X, END_POPUP_Y, END_POPUP_W, END_POPUP_H, DARKGRAY);
+			auto gs = current_state.get().value.get_status();
+			int final_text = 0;
+			if (gs == GameStatus::Player1Victory) {
+				if (ai_player == GamePlayer::Player1) {
+					// AI won
+					final_text = 0;
+				} else {
+					// Human won
+					final_text = 1;
+				}
+			} else if(gs == GameStatus::Player2Victory) {
+				if (ai_player == GamePlayer::Player2) {
+					// AI won
+					final_text = 0;
+				} else {
+					// Human won
+					final_text = 1;
+				}
+			} else {
+				// Draw
+				final_text = 2;
+			}
+			if (final_text == 0) {
+				DrawText(STR_END_LOST, END_POPUP_X+20, END_POPUP_Y + 20, 36, RAYWHITE);
+				DrawText(STR_END_LOST_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+			} else if (final_text == 1) {
+				DrawText(STR_END_WON, END_POPUP_X + 20, END_POPUP_Y + 20, 36, RAYWHITE);
+				DrawText(STR_END_WON_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+			} else if (final_text == 2) {
+				DrawText(STR_END_DRAW, END_POPUP_X + 20, END_POPUP_Y + 20, 36, RAYWHITE);
+				DrawText(STR_END_DRAW_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+			}
+			DrawText(STR_RESTART_HINT, END_POPUP_X + 20, END_POPUP_Y + 80, 16, RAYWHITE);
 		}
 
 		EndDrawing();
