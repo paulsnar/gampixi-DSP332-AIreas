@@ -113,6 +113,11 @@ StateTreeNode & StateTreeNode::best_child()
 	}
 	std::cout << std::endl;
 	//return next.at(best_indexes[rand() % best_indexes.size()]);
+	// Pick the first best, as that has been evaluated most thoroughly, so shouldn't contain any
+	// unexpected surprises. Hopefully, I'm just annoyed that the AI seems to be much more shit
+	// than I expected it to be, doing stupid moves and letting me win. (at least with the commented
+	// out approach, and also that behaviour stops if alpha >= beta => alpha > beta, but memory
+	// use grows greatly.
 	return next.at(best_indexes[0]);
 }
 
