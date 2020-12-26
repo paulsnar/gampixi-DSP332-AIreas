@@ -79,6 +79,12 @@ void RenderBlock::render(float xoff, float yoff, bool debug)
 	Rectangle final_rect = rect;
 	final_rect.x += xoff;
 	final_rect.y += yoff;
+	Rectangle outline_rect = final_rect;
+	outline_rect.x -= 1;
+	outline_rect.y -= 1;
+	outline_rect.height += 2;
+	outline_rect.width += 2;
+	DrawRectangleRec(outline_rect, BLOCK_COLOR_OUTLINE);
 	DrawRectangleRec(final_rect, color);
 
 	if (debug) {

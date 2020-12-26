@@ -28,6 +28,9 @@ constexpr unsigned int END_POPUP_H = 120;
 constexpr unsigned int END_POPUP_X = (SCREEN_SIZE_X - END_POPUP_W) / 2;
 constexpr unsigned int END_POPUP_Y = SCREEN_SIZE_Y - END_POPUP_H - 50;
 
+constexpr Color BACKGROUND_COLOR = Color { 36, 36, 36, 255 };
+
+constexpr Color BLOCK_COLOR_OUTLINE = Color {134, 207, 154, 255};
 constexpr Color BLOCK_COLOR_NORMAL = GREEN;
 constexpr Color BLOCK_COLOR_HOVER = DARKGREEN;
 constexpr Color BLOCK_COLOR_LINKED = BLUE;

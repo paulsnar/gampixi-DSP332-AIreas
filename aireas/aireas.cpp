@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
 		}
 
 		BeginDrawing();
-		ClearBackground(RAYWHITE);
+		ClearBackground(BACKGROUND_COLOR);
 
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
 		render_score(current_state.get().value);
