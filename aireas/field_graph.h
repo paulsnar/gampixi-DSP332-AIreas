@@ -107,6 +107,15 @@ public:
 	Field& operator=(const Field& rhs);
 	Block* get_block(size_t at) const;
 	Block* get_block(int x, int y) const;
+	inline int get_block_count() const {
+		int ret = 0;
+		for (size_t i = 0; i < blocks_size; i++) {
+			if (blocks[i].get_active()) {
+				ret++;
+			}
+		}
+		return ret;
+	}
 	inline size_t get_blocks_size() const {
 		return this->blocks_size;
 	}

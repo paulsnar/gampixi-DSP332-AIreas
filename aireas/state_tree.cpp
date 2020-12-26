@@ -27,7 +27,21 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 		// This is final node and will provide the heuristic value
 		// The more we win (larger score delta), the better
 		if constexpr (MAN_IR_DAUDZ_RAM == true) {
-			node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
+			switch (value.get_status()) {
+			case GameStatus::Player1Victory:
+				node_value = value.get_field().get_block_count();
+				break;
+			case GameStatus::Player2Victory:
+				node_value = -value.get_field().get_block_count();
+				break;
+			case GameStatus::Playing:
+			case GameStatus::Draw:
+			default:
+				node_value = 0;
+				break;
+			}
+			//node_value = value.get_field().get_block_count() * (value.get_status == GamePlayer::Player1 ? 1 : -1);
+			//node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
 		} else {
 			switch (value.get_status()) {
 			case GameStatus::Player1Victory:

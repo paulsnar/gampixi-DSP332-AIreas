@@ -12,7 +12,7 @@ constexpr unsigned int SCREEN_SIZE_Y = 480;
 //			 algorithm to walk way more subtrees, increasing RAM usage a lot. Either way, if you play for long enough,
 //			 you'll start running out of memory, sowwy.
 //constexpr bool MAN_IR_DAHUJA_RAM = false;
-constexpr bool MAN_IR_DAUDZ_RAM = false; // Akadēmiski-korektā versija
+constexpr bool MAN_IR_DAUDZ_RAM = true; // Akadēmiski-korektā versija
 
 constexpr unsigned int FIELD_DIMENSION = 4;
 constexpr unsigned int BLOCK_DRAW_SIZE = 30;
