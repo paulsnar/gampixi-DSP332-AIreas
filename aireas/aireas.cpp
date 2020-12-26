@@ -17,7 +17,7 @@ using std::tuple;
 
 std::vector<RenderBlock> renderblocks;
 StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
-StateTreeNode& current_state = root;
+auto current_state = std::ref(root);
 
 tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
 	int x, y, w, h;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 	walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
 
 	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
-	update_renderblocks(current_state.value.get_field());
+	update_renderblocks(current_state.get().value.get_field());
 
 	std::srand(std::time(NULL));
 
@@ -137,12 +137,12 @@ int main(int argc, char* argv[])
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		if (IsKeyPressed(KEY_SPACE)) {
-			current_state = current_state.get_child(rand() % current_state.get_child_count());
+			current_state = std::ref(current_state.get().get_child(rand() % current_state.get().get_child_count()));
 			/*auto edges = current_state.value.get_field().get_valid_edges();
 			auto e = edges[rand() % edges.size()].get();
 			states.push_back(states.back().perform_move(e));*/
-			walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
-			update_renderblocks(current_state.value.get_field());
+			walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
+			update_renderblocks(current_state.get().value.get_field());
 		}
 
 		BeginDrawing();
@@ -153,8 +153,8 @@ int main(int argc, char* argv[])
 			//draw_field_edges(states.back().get_field());
 		//}
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
-		draw_field_edges(current_state);
-		render_score(current_state.value);
+		draw_field_edges(current_state.get());
+		render_score(current_state.get().value);
 
 		EndDrawing();
 	}

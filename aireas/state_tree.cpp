@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "state_tree.h"
+#include "aireas_defs.h"
 #include <cmath>
 #include <iostream>
 
@@ -25,19 +26,22 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
 		// The more we win (larger score delta), the better
-		//node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
-		switch (value.get_status()) {
-		case GameStatus::Player1Victory:
-			node_value = 1;
-			break;
-		case GameStatus::Player2Victory:
-			node_value = -1;
-			break;
-		case GameStatus::Playing:
-		case GameStatus::Draw:
-		default:
-			node_value = 0;
-			break;
+		if constexpr (MAN_IR_DAUDZ_RAM) {
+			node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
+		} else {
+			switch (value.get_status()) {
+			case GameStatus::Player1Victory:
+				node_value = 1;
+				break;
+			case GameStatus::Player2Victory:
+				node_value = -1;
+				break;
+			case GameStatus::Playing:
+			case GameStatus::Draw:
+			default:
+				node_value = 0;
+				break;
+			}
 		}
 	} else {
 		node_value = value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
