@@ -89,16 +89,43 @@ void update_renderblocks(Field& field) {
 		if (renderblocks.size() <= i) {
 			renderblocks.push_back(RenderBlock());
 		}
-		const Block* b = field.get_block(i);
+		Block* b = field.get_block(i);
+		renderblocks[i].assign_block(b);
+		renderblocks[i].reset_linked();
 		renderblocks[i].update_visibility(b->get_active());
 		renderblocks[i].update_position(b->get_dimensions());
 		renderblocks[i].update_color(GREEN);
+	}
+
+	// Add links to newly updated renderblocks that will be used to handle move input.
+	// Basically - every block gets a link to the move that can be performed from it
+	// + the other renderblock this move points to. This way we can easily highlight whatever we want.
+	auto edges = field.get_valid_edges();
+	for (auto& e : edges) {
+		RenderBlock* first = nullptr;
+		RenderBlock* second = nullptr;
+		for (auto& rb : renderblocks) {
+			if (rb.matches_block(e.get().get_first())) {
+				first = &rb;
+			} else if (rb.matches_block(e.get().get_second())) {
+				second = &rb;
+			}
+			if (first != nullptr && second != nullptr) {
+				break;
+			}
+		}
+		if (first == nullptr || second == nullptr) {
+			std::cout << "This should have never happened jedritvaikocin!" << std::endl;
+			continue;
+		}
+		first->add_link(e, second);
+		second->add_link(e, first);
 	}
 }
 
 void render_renderblocks(float x_offset, float y_offset) {
 	for (auto& b : renderblocks) {
-		b.render(x_offset, y_offset);
+		b.render(x_offset, y_offset, true);
 	}
 }
 

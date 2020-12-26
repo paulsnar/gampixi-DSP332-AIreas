@@ -105,8 +105,8 @@ public:
 	Field(const Field& other);
 	~Field();
 	Field& operator=(const Field& rhs);
-	const Block* get_block(size_t at) const;
-	const Block* get_block(int x, int y) const;
+	Block* get_block(size_t at) const;
+	Block* get_block(int x, int y) const;
 	inline size_t get_blocks_size() const {
 		return this->blocks_size;
 	}

@@ -98,12 +98,12 @@ Field& Field::operator=(const Field & other)
 	return *this;
 }
 
-const Block * Field::get_block(size_t at) const
+Block * Field::get_block(size_t at) const
 {
 	return &this->blocks[at];
 }
 
-const Block * Field::get_block(int x, int y) const
+Block * Field::get_block(int x, int y) const
 {
 	return this->get_block(y*this->blocks_size_n + x);
 }
