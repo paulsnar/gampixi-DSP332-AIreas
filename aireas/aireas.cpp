@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <thread>
 
 using std::tuple;
 
@@ -247,6 +248,14 @@ void process_inputs() {
 	}
 }
 
+void perform_ai_move() {
+	walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
+	// Perform one from the best moves
+	current_state = std::ref(current_state.get().best_child());
+	update_renderblocks(current_state.get().value.get_field());
+	ui_state = UiState::PickFirst;
+}
+
 int main(int argc, char* argv[])
 {
 	int screenWidth = SCREEN_SIZE_X;
@@ -269,35 +278,36 @@ int main(int argc, char* argv[])
 			ui_state == UiState::Finished;
 		}
 
-		bool is_ai_move = current_state.get().value.get_current_player() == ai_player;
-		if (!is_ai_move) {
-			process_inputs();
+		if (ui_state != UiState::Calculating) {
+			bool is_ai_move = current_state.get().value.get_current_player() == ai_player;
+			if (!is_ai_move) {
+				process_inputs();
 
-			if (pick_first != nullptr && pick_second != nullptr) {
-				// Both blocks have been picked - perform move!
-				for (auto& other : pick_first->linked) {
-					if (other.block == pick_second) {
-						// This is the correct move to execute.
-						current_state = std::ref(current_state.get().get_child(other.edge_idx));
-						//walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
-						update_renderblocks(current_state.get().value.get_field());
-						pick_first = nullptr;
-						pick_second = nullptr;
-						ui_state = UiState::PickFirst;
-						break;
+				if (pick_first != nullptr && pick_second != nullptr) {
+					// Both blocks have been picked - perform move!
+					for (auto& other : pick_first->linked) {
+						if (other.block == pick_second) {
+							// This is the correct move to execute.
+							current_state = std::ref(current_state.get().get_child(other.edge_idx));
+							//walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
+							update_renderblocks(current_state.get().value.get_field());
+							pick_first = nullptr;
+							pick_second = nullptr;
+							ui_state = UiState::PickFirst;
+							break;
+						}
 					}
 				}
 			}
-		} else {
-			if (current_state.get().value.get_status() == GameStatus::Playing) {
-				std::cout << "Alpha/Betaing..." << std::endl;
-				walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
-				// Perform one from the best moves
-				current_state = std::ref(current_state.get().best_child());
-				update_renderblocks(current_state.get().value.get_field());
-				pick_first = nullptr;
-				pick_second = nullptr;
-				ui_state = UiState::PickFirst;
+			else {
+				if (current_state.get().value.get_status() == GameStatus::Playing) {
+					ui_state = UiState::Calculating;
+					std::cout << "Starting AI move..." << std::endl;
+					pick_first = nullptr;
+					pick_second = nullptr;
+					auto ai_thread = std::thread (perform_ai_move);
+					ai_thread.detach();
+				}
 			}
 		}
 		
