@@ -143,13 +143,16 @@ void render_renderblocks(float x_offset, float y_offset) {
 	}
 }
 
+int total_human_wins = 0;
+int total_ai_wins = 0;
+
 void render_score(GameState& gameState) {
 	static char score_text[50] = "kappa123";
 
 	int human_score = ai_player == GamePlayer::Player1 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
 	int ai_score = ai_player == GamePlayer::Player2 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
 
-	sprintf_s(score_text, 50, "%d %s | %s %d", human_score, STR_YOU, STR_AI, ai_score);
+	sprintf_s(score_text, 50, "(%d) %d %s | %s %d (%d)", total_human_wins, human_score, STR_YOU, STR_AI, ai_score, total_ai_wins);
 	int t_width = MeasureText(score_text, 24);
 	int t_x = (SCREEN_SIZE_X - t_width) / 2;
 
@@ -251,12 +254,39 @@ void process_inputs() {
 		break;
 	case UiState::Finished:
 		if (IsMouseButtonPressed(0)) {
+			BeginDrawing();
+			DrawText(STR_CLEARING, 23, SCREEN_SIZE_Y - 35, 12, LIGHTGRAY);
+			EndDrawing();
+			root = StateTreeNode(FIELD_DIMENSION);
 			current_state = std::ref(root);
 			update_renderblocks(current_state.get().value.get_field());
 			ai_player = ai_player == GamePlayer::Player1 ? GamePlayer::Player2 : GamePlayer::Player1;
 			ui_state = UiState::PickFirst;
 		}
 		break;
+	}
+}
+
+void test_after_move() {
+	if (current_state.get().value.get_status() == GameStatus::Draw) {
+		total_human_wins += 1;
+		total_ai_wins += 1;
+	}
+	else if (current_state.get().value.get_status() == GameStatus::Player1Victory) {
+		if (ai_player == GamePlayer::Player1) {
+			total_ai_wins += 1;
+		}
+		else {
+			total_human_wins += 1;
+		}
+	}
+	else if (current_state.get().value.get_status() == GameStatus::Player2Victory) {
+		if (ai_player == GamePlayer::Player2) {
+			total_ai_wins += 1;
+		}
+		else {
+			total_human_wins += 1;
+		}
 	}
 }
 
@@ -270,11 +300,13 @@ void perform_ai_move() {
 			best_moves = {3,5,7,14,11,18,17,19};
 		}
 		current_state = std::ref(current_state.get().get_child(best_moves[rand() % best_moves.size()]));
+		test_after_move();
 	}
 	else {
 		walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
 		// Perform one from the best moves
 		current_state = std::ref(current_state.get().best_child());
+		test_after_move();
 	}
 
 	update_renderblocks(current_state.get().value.get_field());
@@ -309,6 +341,7 @@ int main(int argc, char* argv[])
 						if (other.block == pick_second) {
 							// This is the correct move to execute.
 							current_state = std::ref(current_state.get().get_child(other.edge_idx));
+							test_after_move();
 							update_renderblocks(current_state.get().value.get_field());
 							pick_first = nullptr;
 							pick_second = nullptr;

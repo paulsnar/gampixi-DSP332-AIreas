@@ -47,6 +47,7 @@ enum Language {
 
 constexpr Language LANGUAGE = Language::Latvian;
 constexpr auto STR_CALCULATING = LANGUAGE == Language::English ? "Calculating..." : "Aprekina...";
+constexpr auto STR_CLEARING = LANGUAGE == Language::English ? "CLEARING MEMORY..." : "NOTIRA ATMINU...";
 constexpr auto STR_YOU = LANGUAGE == Language::English ? "You" : "Tu";
 constexpr auto STR_AI = LANGUAGE == Language::English ? "AI" : "Dators";
 constexpr auto STR_YOUR_MOVE = LANGUAGE == Language::English ? "Your move" : "Tavs gajiens";
