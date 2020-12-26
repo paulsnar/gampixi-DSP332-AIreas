@@ -26,7 +26,7 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
 		// The more we win (larger score delta), the better
-		if constexpr (MAN_IR_DAUDZ_RAM) {
+		if constexpr (MAN_IR_DAUDZ_RAM == true) {
 			node_value = (int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2);
 		} else {
 			switch (value.get_status()) {
@@ -71,6 +71,7 @@ StateTreeNode & StateTreeNode::best_child()
 			if (this_value > best_indexes_value) {
 				best_indexes.clear();
 				best_indexes_value = this_value;
+				std::cout << "New best index: " << best_indexes_value << std::endl;
 			}
 			if (this_value == best_indexes_value) {
 				best_indexes.push_back(i);
@@ -81,6 +82,7 @@ StateTreeNode & StateTreeNode::best_child()
 			if (this_value < best_indexes_value) {
 				best_indexes.clear();
 				best_indexes_value = this_value;
+				std::cout << "New best index: " << best_indexes_value << std::endl;
 			}
 			if (this_value == best_indexes_value) {
 				best_indexes.push_back(i);
@@ -88,6 +90,11 @@ StateTreeNode & StateTreeNode::best_child()
 		}
 	}
 
+	std::cout << "Best moves: ";
+	for (auto i : best_indexes) {
+		std::cout << i << " ";
+	}
+	std::cout << std::endl;
 	return next.at(best_indexes[rand() % best_indexes.size()]);
 }
 

@@ -33,3 +33,11 @@ enum UiState {
 	Calculating,
 	Finished
 };
+
+enum Language {
+	English,
+	Latvian
+};
+
+constexpr Language LANGUAGE = Language::Latvian;
+constexpr auto STR_CALCULATING = LANGUAGE == Language::English ? "Calculating..." : "Aprekina...";

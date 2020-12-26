@@ -15,6 +15,8 @@
 #include <thread>
 
 using std::tuple;
+using std::min;
+using std::max;
 
 std::vector<RenderBlock> renderblocks;
 StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
@@ -275,7 +277,7 @@ int main(int argc, char* argv[])
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		if (current_state.get().value.get_status() != GameStatus::Playing) {
-			ui_state == UiState::Finished;
+			ui_state = UiState::Finished;
 		}
 
 		if (ui_state != UiState::Calculating) {
@@ -320,13 +322,26 @@ int main(int argc, char* argv[])
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 
-		//for (size_t i = 0; i < fields.size(); i++) {
-			//draw_field(states.back().get_field());
-			//draw_field_edges(states.back().get_field());
-		//}
 		render_renderblocks(FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y);
-		draw_debug(current_state.get());
 		render_score(current_state.get().value);
+
+		if (ui_state == UiState::Calculating) {
+			draw_debug(current_state.get());
+
+			// Draw calculating UI
+			Vector2 ringCenter;
+			ringCenter.x = 30;
+			ringCenter.y = SCREEN_SIZE_Y - 30;
+			//double angle1 = -180 + std::remainder(360.0 * GetTime(), 360.0);
+			//double angle2 = -180 + std::remainder(360.0 * GetTime() + 135, 360.0);
+			double angle1 = -360.0 * GetTime() * 2;
+			double angle2 = -360.0 * (GetTime() + std::sin(GetTime() * 5) * 0.1) * 2 + 135;
+			DrawRing(ringCenter, 8, 12, min(angle1, angle2), max(angle1, angle2), 16, LIGHTGRAY);
+			DrawText(STR_CALCULATING, 52, SCREEN_SIZE_Y - 35, 12, LIGHTGRAY);
+		}
+		if (ui_state == UiState::Finished) {
+			// Draw finish UI, let restart
+		}
 
 		EndDrawing();
 	}
