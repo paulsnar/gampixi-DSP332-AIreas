@@ -1,5 +1,6 @@
 #pragma once
 #include <tuple>
+#include "raylib.h"
 
 typedef std::tuple<int, int, int, int> dims;
 
@@ -20,3 +21,15 @@ constexpr unsigned int FIELD_OFFSET_CENTERED_X =
 	(SCREEN_SIZE_X - (FIELD_DIMENSION * BLOCK_DRAW_SIZE + (FIELD_DIMENSION - 1) * BLOCK_PADDING)) / 2;
 constexpr unsigned int FIELD_OFFSET_CENTERED_Y =
 	(SCREEN_SIZE_Y - (FIELD_DIMENSION * BLOCK_DRAW_SIZE + (FIELD_DIMENSION - 1) * BLOCK_PADDING)) / 2;
+
+constexpr Color BLOCK_COLOR_NORMAL = GREEN;
+constexpr Color BLOCK_COLOR_HOVER = DARKGREEN;
+constexpr Color BLOCK_COLOR_LINKED = BLUE;
+constexpr Color BLOCK_COLOR_LINKEDHOVER = DARKBLUE;
+
+enum UiState {
+	PickFirst,
+	PickSecond,
+	Calculating,
+	Finished
+};

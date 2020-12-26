@@ -15,10 +15,6 @@
 
 using std::tuple;
 
-std::vector<RenderBlock> renderblocks;
-StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
-auto current_state = std::ref(root);
-
 tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
 	int x, y, w, h;
 	std::tie(x, y, w, h) = b;
@@ -84,6 +80,13 @@ void draw_debug(StateTreeNode& tree_node) {
 	}
 }
 
+std::vector<RenderBlock> renderblocks;
+StateTreeNode root = StateTreeNode(FIELD_DIMENSION);
+auto current_state = std::ref(root);
+
+auto ui_state = UiState::PickFirst;
+RenderBlock* pick_first = nullptr;
+
 void update_renderblocks(Field& field) {
 	for (size_t i = 0; i < field.get_blocks_size(); i++) {
 		if (renderblocks.size() <= i) {
@@ -115,7 +118,7 @@ void update_renderblocks(Field& field) {
 			}
 		}
 		if (first == nullptr || second == nullptr) {
-			std::cout << "This should have never happened jedritvaikocin!" << std::endl;
+			std::cout << "Edge couldn't find both renderblocks, pray that you won't crash." << std::endl;
 			continue;
 		}
 		first->add_link(e, second);
@@ -154,6 +157,11 @@ void render_score(GameState& gameState) {
 
 int main(int argc, char* argv[])
 {
+	int screenWidth = SCREEN_SIZE_X;
+	int screenHeight = SCREEN_SIZE_Y;
+	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
+	SetTargetFPS(60);
+
 	std::cout << "Alpha/Betaing..." << std::endl;
 	walk_tree_with_alphabeta(current_state, INT_MIN, INT_MAX);
 
@@ -162,22 +170,77 @@ int main(int argc, char* argv[])
 
 	std::srand(std::time(NULL));
 
-	int screenWidth = SCREEN_SIZE_X;
-	int screenHeight = SCREEN_SIZE_Y;
-	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
-
-	SetTargetFPS(60);
-
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		if (IsKeyPressed(KEY_SPACE)) {
+		switch (ui_state) {
+		case UiState::Calculating:
+			break;
+		case UiState::PickFirst:
+			for (auto& b : renderblocks) {
+				if (b.test_hover(GetMousePosition(), FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y)) {
+					b.update_color(BLOCK_COLOR_HOVER);
+					if (IsMouseButtonPressed(0)) {
+						pick_first = &b;
+						for (auto& l : b.linked) {
+							l.block->linked_highlight = true;
+						}
+						ui_state = UiState::PickSecond;
+					}
+				} else {
+					b.update_color(BLOCK_COLOR_NORMAL);
+				}
+			}
+			break;
+		case UiState::PickSecond:
+			for (auto& b : renderblocks) {
+				if (b.test_hover(GetMousePosition(), FIELD_OFFSET_CENTERED_X, FIELD_OFFSET_CENTERED_Y)) {
+					if (&b == pick_first) {
+						b.update_color(BLOCK_COLOR_LINKEDHOVER);
+					} else {
+						b.update_color(b.linked_highlight ? BLOCK_COLOR_LINKEDHOVER : BLOCK_COLOR_HOVER);
+					}
+					
+					if (IsMouseButtonPressed(0)) {
+						if (b.linked_highlight) {
+							// Find the correct link and execute move.
+							ui_state = UiState::Calculating;
+						} else if (&b == pick_first) {
+							// Deselect selection
+							for (auto& l : b.linked) {
+								l.block->linked_highlight = false;
+							}
+							pick_first = nullptr;
+							ui_state = UiState::PickFirst;
+							break;
+						} else {
+							// Change first selection
+							for (auto& l : pick_first->linked) {
+								l.block->linked_highlight = false;
+							}
+							pick_first = &b;
+							for (auto& l : b.linked) {
+								l.block->linked_highlight = true;
+							}
+							ui_state = UiState::PickSecond;
+						}
+					}
+				} else {
+					if (&b == pick_first) {
+						b.update_color(BLOCK_COLOR_LINKEDHOVER);
+					} else {
+						b.update_color(b.linked_highlight ? BLOCK_COLOR_LINKED : BLOCK_COLOR_NORMAL);
+					}
+				}
+			}
+			break;
+		case UiState::Finished:
+			break;
+		}
+		/*if (IsKeyPressed(KEY_SPACE)) {
 			current_state = std::ref(current_state.get().get_child(rand() % current_state.get().get_child_count()));
-			/*auto edges = current_state.value.get_field().get_valid_edges();
-			auto e = edges[rand() % edges.size()].get();
-			states.push_back(states.back().perform_move(e));*/
 			walk_tree_with_alphabeta(current_state.get(), INT_MIN, INT_MAX);
 			update_renderblocks(current_state.get().value.get_field());
-		}
+		}*/
 
 		BeginDrawing();
 		ClearBackground(RAYWHITE);

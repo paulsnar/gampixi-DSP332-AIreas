@@ -17,6 +17,16 @@ bool RenderBlock::matches_block(Block* other)
 	return true;
 }
 
+bool RenderBlock::test_hover(Vector2 pos, float xoff, float yoff)
+{
+	Vector2 finalPos = pos;
+	finalPos.x -= xoff;
+	finalPos.y -= yoff;
+	//finalPos.x -= 10;
+	//finalPos.y -= 10;
+	return CheckCollisionPointRec(finalPos, rect);
+}
+
 void RenderBlock::reset_linked()
 {
 	linked = vector<RenderBlockLink>();
@@ -56,6 +66,7 @@ void RenderBlock::update_position(dims new_dims)
 void RenderBlock::update_color(Color new_color)
 {
 	// TODO: Tweening
+	if (color.r == new_color.r && color.g == new_color.g && color.b == new_color.b && color.a == new_color.a) return;
 	color = new_color;
 }
 

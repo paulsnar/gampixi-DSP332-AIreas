@@ -16,7 +16,11 @@ struct RenderBlockLink {
 
 class RenderBlock {
 public:
-	//bool matches_block(const Block& block);
+	vector<RenderBlockLink> linked;
+	bool linked_highlight = false;
+
+	bool test_hover(Vector2 pos, float xoff, float yoff);
+
 	void reset_linked();
 	bool matches_block(Block* other);
 	void add_link(Edge& link, RenderBlock* other);
@@ -31,5 +35,4 @@ private:
 	int xg, yg, wg, hg;
 	Rectangle rect;
 	Color color;
-	vector<RenderBlockLink> linked;
 };
