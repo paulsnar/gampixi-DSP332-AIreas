@@ -38,22 +38,6 @@ tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) 
 	return std::make_tuple(x, y, w, h);
 }
 
-void draw_field(const Field& field) {
-	for (size_t i = 0; i < field.get_blocks_size(); i++) {
-		const Block* b = field.get_block(i);
-		if (b->get_active() == false) continue;
-
-		int x, y, w, h;
-		std::tie(x, y, w, h) = block_to_draw_dimensions(b->get_dimensions());
-
-		DrawRectangle(x, y, w, h, GREEN);
-
-		char block_label[4];
-		sprintf_s(block_label, 4, "%u", i);
-		DrawText(block_label, x, y, 12, DARKGREEN);
-	}
-}
-
 void draw_debug(StateTreeNode& tree_node) {
 	char extra_label[16];
 	sprintf_s(extra_label, 16, "%s", tree_node.value.get_current_player() == GamePlayer::Player1 ? "MAX" : "MIN");
@@ -170,6 +154,7 @@ void render_score(GameState& gameState) {
 	
 }
 
+// Spaghetti UI code, don't touch.
 void process_inputs() {
 	switch (ui_state) {
 	case UiState::Calculating:
@@ -269,6 +254,7 @@ void process_inputs() {
 	}
 }
 
+// After executing each move, check if the game ended here.
 void test_after_move() {
 	if (current_state.get().value.get_status() == GameStatus::Draw) {
 		total_human_wins += 1;
@@ -292,6 +278,8 @@ void test_after_move() {
 	}
 }
 
+// Method run as a different thread to not lock up UI
+// IMPORTANT: Set UiState::Calculating before running!
 void perform_ai_move() {
 	srand(time(NULL) + std::hash<std::thread::id>{}(std::this_thread::get_id()));
 	if (&current_state.get() == &root) {

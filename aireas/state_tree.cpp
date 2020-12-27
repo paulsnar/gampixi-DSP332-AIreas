@@ -25,7 +25,7 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 
 	if (value.get_status() != GameStatus::Playing) {
 		// This is final node and will provide the heuristic value
-		if constexpr (MAN_IR_DAUDZ_RAM == true) {
+		if constexpr (USE_BETTER_NODE_VALUES == true) {
 			// The more complex the board is, the better the node, basically, move to a victory that's harder to decipher
 			/*switch (value.get_status()) {
 			case GameStatus::Player1Victory:
@@ -75,57 +75,25 @@ StateTreeNode & StateTreeNode::get_child(size_t idx)
 
 StateTreeNode & StateTreeNode::best_child()
 {
-	// Choose the best node. If multiple nodes have the same heuristic value, choose randomly one of the best.
-	int best_indexes_value = value.get_current_player() == GamePlayer::Player1 ? INT_MIN : INT_MAX;
-	auto best_indexes = vector<size_t>();
-
-	for (size_t i = 0; i < next.size(); i++) {
-		if (value.get_current_player() == GamePlayer::Player1) {
-			// Maximizing
-			int this_value = next.at(i).node_value;
-			if (this_value > best_indexes_value) {
-				best_indexes.clear();
-				best_indexes_value = this_value;
-				std::cout << "New best index: " << best_indexes_value << std::endl;
-			}
-			if (this_value == best_indexes_value) {
-				std::cout << "Added: " << best_indexes_value << ", idx: " << i << std::endl;
-				best_indexes.push_back(i);
-			}
-		} else {
-			// Minimizing
-			int this_value = next.at(i).node_value;
-			if (this_value < best_indexes_value) {
-				best_indexes.clear();
-				best_indexes_value = this_value;
-				std::cout << "New best index: " << best_indexes_value << std::endl;
-			}
-			if (this_value == best_indexes_value) {
-				std::cout << "Added: " << best_indexes_value << ", idx: " << i << std::endl;
-				best_indexes.push_back(i);
-			}
+	// Pick the first node that has the same heuristic value as this node - that's the winning path.
+	// If multiple nodes have the same value, DON'T PICK AT RANDOM. The next node subtrees are not
+	// evaluated as thoroughly and may lead to a loss.
+	for (auto& n : next) {
+		if (n.node_value == this->node_value) {
+			std::cout << "Found node with h-value " << n.node_value << std::endl;
+			return n;
 		}
 	}
 
-	std::cout << "Best moves: ";
-	for (auto i : best_indexes) {
-		std::cout << i << " ";
-	}
-	std::cout << std::endl;
-	//return next.at(best_indexes[rand() % best_indexes.size()]);
-	// Pick the first best, as that has been evaluated most thoroughly, so shouldn't contain any
-	// unexpected surprises. Hopefully, I'm just annoyed that the AI seems to be much more shit
-	// than I expected it to be, doing stupid moves and letting me win. (at least with the commented
-	// out approach, and also that behaviour stops if alpha >= beta => alpha > beta, but memory
-	// use grows greatly.
-	return next.at(best_indexes[0]);
+	std::cout << "Didn't find node - this is bad." << std::endl;
+	return next.front();
 }
 
 /*
-Some ground rules:
-Player1 is maximizer, Player2 is minimizer.
-Whoever gets to be the AI is arbritrary.
-Nodes by default get initialized to huge values.
+ * Some ground rules:
+ * Player1 is maximizer, Player2 is minimizer.
+ * Whoever gets to be the AI is arbritrary.
+ * Nodes by default get initialized to huge values.
 */
 
 void walk_tree_with_depth(StateTreeNode & from, size_t depth)
