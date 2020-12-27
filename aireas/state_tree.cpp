@@ -18,7 +18,7 @@ StateTreeNode::StateTreeNode(size_t field_size)
 
 StateTreeNode::StateTreeNode(GameState& from, size_t move)
 {
-	value = from.perform_move(from.get_field().get_valid_edges().at(move).get());
+	from.perform_move_to_place(from.get_field().get_valid_edges().at(move).get(), value);
 	parsed = vector<bool>(value.get_field().get_valid_edge_count(), false);
 	next = vector<StateTreeNode>();
 	next.reserve(parsed.size());
@@ -27,20 +27,6 @@ StateTreeNode::StateTreeNode(GameState& from, size_t move)
 		// This is final node and will provide the heuristic value
 		if constexpr (USE_BETTER_NODE_VALUES == true) {
 			// The more complex the board is, the better the node, basically, move to a victory that's harder to decipher
-			/*switch (value.get_status()) {
-			case GameStatus::Player1Victory:
-				node_value = value.get_field().get_block_count();
-				break;
-			case GameStatus::Player2Victory:
-				node_value = -value.get_field().get_block_count();
-				break;
-			case GameStatus::Playing:
-			case GameStatus::Draw:
-			default:
-				node_value = 0;
-				break;
-			}*/
-			//node_value = value.get_field().get_block_count() * (value.get_status == GamePlayer::Player1 ? 1 : -1);
 			node_value = value.get_field().get_block_count() * 
 				((int)value.get_score(GamePlayer::Player1) - (int)value.get_score(GamePlayer::Player2));
 		} else {
