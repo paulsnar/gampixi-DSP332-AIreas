@@ -65,9 +65,4 @@
       <Filter>assets</Filter>
     </Font>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>
