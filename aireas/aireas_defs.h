@@ -65,3 +65,5 @@ constexpr auto STR_END_WON_FLAIR = LANGUAGE == Language::English
 ? "I'll just mention that the first player has an advantage" : "Starp citu, but pirmajam ir vieglak :)";
 constexpr auto STR_RESTART_HINT = LANGUAGE == Language::English
 ? "Click anywhere to continue" : "Noklikskini, lai turpinatu";
+constexpr auto STR_ATTRIBUTION = LANGUAGE == Language::English
+? "AIreas by Rudolfs Agris Stilve | 2020" : "AIreas, Rudolfs Agris Stilve | 2020.";

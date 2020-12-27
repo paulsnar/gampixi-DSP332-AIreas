@@ -28,6 +28,18 @@ auto ai_player = GamePlayer::Player1;
 RenderBlock* pick_first = nullptr;
 RenderBlock* pick_second = nullptr;
 
+Font normal_font_18px;
+Font normal_font_36px;
+Font bold_font_18px;
+Font bold_font_36px;
+
+void load_fonts() {
+	normal_font_18px = LoadFontEx("assets/roboto_regular.ttf", 18, 0, 255);
+	normal_font_36px = LoadFontEx("assets/roboto_regular.ttf", 36, 0, 255);
+	bold_font_18px = LoadFontEx("assets/roboto_bold.ttf", 18, 0, 255);
+	bold_font_36px = LoadFontEx("assets/roboto_bold.ttf", 36, 0, 255);
+}
+
 tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) {
 	int x, y, w, h;
 	std::tie(x, y, w, h) = b;
@@ -139,19 +151,22 @@ void render_score(GameState& gameState) {
 	int ai_score = ai_player == GamePlayer::Player2 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
 
 	sprintf_s(score_text, 50, "(%d) %d %s | %s %d (%d)", total_human_wins, human_score, STR_YOU, STR_AI, ai_score, total_ai_wins);
-	int t_width = MeasureText(score_text, 24);
-	int t_x = (SCREEN_SIZE_X - t_width) / 2;
+	Vector2 t_width = MeasureTextEx(bold_font_36px, score_text, 24, 0);
+	int t_x = (SCREEN_SIZE_X - t_width.x) / 2;
 
-	DrawText(score_text, t_x+1, 20+1, 24, DARKGRAY); // Shadow
-	DrawText(score_text, t_x, 20, 24, LIGHTGRAY);
+	DrawTextEx(bold_font_36px, score_text, Vector2{ static_cast<float>(t_x + 1), static_cast<float>(20 + 1) }, 24, 0, DARKGRAY); // Shadow
+	DrawTextEx(bold_font_36px, score_text, Vector2{ static_cast<float>(t_x), static_cast<float>(20) }, 24, 0, LIGHTGRAY);
 
 	if (ai_player != gameState.get_current_player()) {
-		int tg_width = MeasureText(STR_YOUR_MOVE, 18);
-		int tg_x = (SCREEN_SIZE_X - tg_width) / 2;
-		DrawText(STR_YOUR_MOVE, tg_x + 1, 50 + 1, 18, DARKGRAY); // Shadow
-		DrawText(STR_YOUR_MOVE, tg_x, 50, 18, LIGHTGRAY);
+		Vector2 tg_width = MeasureTextEx(bold_font_36px, STR_YOUR_MOVE, 18, 0);
+		int tg_x = (SCREEN_SIZE_X - tg_width.x) / 2;
+		DrawTextEx(normal_font_36px, STR_YOUR_MOVE, Vector2{ static_cast<float>(tg_x + 1), static_cast<float>(50 + 1) }, 18, 0, DARKGRAY); // Shadow
+		DrawTextEx(normal_font_36px, STR_YOUR_MOVE, Vector2{ static_cast<float>(tg_x), static_cast<float>(50) }, 18,0, LIGHTGRAY);
 	}
 	
+	Vector2 author_width = MeasureTextEx(bold_font_18px, STR_ATTRIBUTION, 12, 2);
+	int author_x = (SCREEN_SIZE_X - author_width.x) / 2;
+	DrawTextEx(bold_font_18px, STR_ATTRIBUTION, Vector2{ static_cast<float>(author_x), static_cast<float>(SCREEN_SIZE_Y - 20) }, 12,2, DARKGRAY);
 }
 
 // Spaghetti UI code, don't touch.
@@ -310,6 +325,13 @@ int main(int argc, char* argv[])
 	InitWindow(screenWidth, screenHeight, "AIreas | Rūdolfs Agris Stilve");
 	SetTargetFPS(60);
 
+	std::cout << "----------------------------------------------------" << std::endl;
+	std::cout << " This is AIreas by Rudolfs Agris Stilve        2020" << std::endl;
+	std::cout << "           https://github.com/gampixi/DSP332-AIreas" << std::endl;
+	std::cout << "----------------------------------------------------" << std::endl;
+
+	load_fonts();
+
 	renderblocks.reserve(FIELD_DIMENSION*FIELD_DIMENSION);
 	update_renderblocks(current_state.get().value.get_field());
 
@@ -368,7 +390,7 @@ int main(int argc, char* argv[])
 			double angle1 = -360.0 * GetTime() * 2;
 			double angle2 = -360.0 * (GetTime() + std::sin(GetTime() * 5) * 0.1) * 2 + 135;
 			DrawRing(ringCenter, 8, 12, min(angle1, angle2), max(angle1, angle2), 16, LIGHTGRAY);
-			DrawText(STR_CALCULATING, 52, SCREEN_SIZE_Y - 35, 12, LIGHTGRAY);
+			DrawTextEx(bold_font_18px, STR_CALCULATING, Vector2{ 52, SCREEN_SIZE_Y - 38 }, 14, 0, LIGHTGRAY);
 		}
 		if (ui_state == UiState::Finished) {
 			// Draw finish UI, let restart
@@ -396,16 +418,16 @@ int main(int argc, char* argv[])
 				final_text = 2;
 			}
 			if (final_text == 0) {
-				DrawText(STR_END_LOST, END_POPUP_X+20, END_POPUP_Y + 20, 36, RAYWHITE);
-				DrawText(STR_END_LOST_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+				DrawTextEx(bold_font_36px, STR_END_LOST, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 20 }, 36, 0, RAYWHITE);
+				DrawTextEx(normal_font_18px, STR_END_LOST_FLAIR, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 60 }, 18, 0, RAYWHITE);
 			} else if (final_text == 1) {
-				DrawText(STR_END_WON, END_POPUP_X + 20, END_POPUP_Y + 20, 36, RAYWHITE);
-				DrawText(STR_END_WON_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+				DrawTextEx(bold_font_36px, STR_END_WON, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 20 }, 36, 0, RAYWHITE);
+				DrawTextEx(normal_font_18px, STR_END_WON_FLAIR, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 60 }, 18, 0, RAYWHITE);
 			} else if (final_text == 2) {
-				DrawText(STR_END_DRAW, END_POPUP_X + 20, END_POPUP_Y + 20, 36, RAYWHITE);
-				DrawText(STR_END_DRAW_FLAIR, END_POPUP_X + 20, END_POPUP_Y + 60, 16, RAYWHITE);
+				DrawTextEx(bold_font_36px, STR_END_DRAW, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 20 }, 36, 0, RAYWHITE);
+				DrawTextEx(normal_font_18px, STR_END_DRAW_FLAIR, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 60 }, 18, 0, RAYWHITE);
 			}
-			DrawText(STR_RESTART_HINT, END_POPUP_X + 20, END_POPUP_Y + 80, 16, RAYWHITE);
+			DrawTextEx(normal_font_18px, STR_RESTART_HINT, Vector2{ END_POPUP_X + 20, END_POPUP_Y + 80 }, 18, 0, RAYWHITE);
 		}
 
 		EndDrawing();

@@ -179,6 +179,17 @@
     <ClCompile Include="renderblock.cpp" />
     <ClCompile Include="state_tree.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\roboto_bold.ttf">
+      <DeploymentContent>true</DeploymentContent>
+    </Font>
+    <Font Include="assets\roboto_regular.ttf">
+      <DeploymentContent>true</DeploymentContent>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
