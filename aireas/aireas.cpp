@@ -10,6 +10,9 @@
 #include "raylib.h"
 #include <tuple>
 #include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
+#include <cmath>
 #include <ctime>
 #include <vector>
 #include <thread>
@@ -52,7 +55,7 @@ tuple<int, int, int, int> block_to_draw_dimensions(tuple<int, int, int, int> b) 
 
 void draw_debug(StateTreeNode& tree_node) {
 	char extra_label[16];
-	sprintf_s(extra_label, 16, "%s", tree_node.value.get_current_player() == GamePlayer::Player1 ? "MAX" : "MIN");
+	snprintf(extra_label, 16, "%s", tree_node.value.get_current_player() == GamePlayer::Player1 ? "MAX" : "MIN");
 	DrawText(extra_label, 5, 5, 12, RED);
 
 	unsigned int edge_index = 0;
@@ -82,9 +85,9 @@ void draw_debug(StateTreeNode& tree_node) {
 		int path_value = 0;
 		if (node_evaluated) {
 			path_value = tree_node.get_child(i).node_value;
-			sprintf_s(edge_label, 16, "%u/%d", edge_index, path_value);
+			snprintf(edge_label, 16, "%u/%d", edge_index, path_value);
 		} else {
-			sprintf_s(edge_label, 16, "%u/N", edge_index);
+			snprintf(edge_label, 16, "%u/N", edge_index);
 		}
 
 		DrawText(edge_label, (x1+x2)/2, (y1+y2)/2, 12, RED);
@@ -150,7 +153,7 @@ void render_score(GameState& gameState) {
 	int human_score = ai_player == GamePlayer::Player1 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
 	int ai_score = ai_player == GamePlayer::Player2 ? gameState.get_score(GamePlayer::Player2) : gameState.get_score(GamePlayer::Player1);
 
-	sprintf_s(score_text, 50, "(%d) %d %s | %s %d (%d)", total_human_wins, human_score, STR_YOU, STR_AI, ai_score, total_ai_wins);
+	snprintf(score_text, 50, "(%d) %d %s | %s %d (%d)", total_human_wins, human_score, STR_YOU, STR_AI, ai_score, total_ai_wins);
 	Vector2 t_width = MeasureTextEx(bold_font_36px, score_text, 24, 0);
 	int t_x = (SCREEN_SIZE_X - t_width.x) / 2;
 
@@ -438,6 +441,5 @@ int main(int argc, char* argv[])
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
 
-	std::quick_exit(0); // The destructors take a long time, just let the OS clean up this mess :/
 	return 0;
 }

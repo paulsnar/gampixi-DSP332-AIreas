@@ -32,7 +32,7 @@ public:
 	inline void set_active(bool value) {
 		this->active = value;
 	}
-	inline bool operator < (const Block& rhs) {
+	inline bool operator < (const Block& rhs) const {
 		if (this->x == rhs.x) {
 			return this->y < rhs.y;
 		}
@@ -61,7 +61,7 @@ public:
 	const inline bool get_valid() const {
 		return this->valid;
 	}
-	inline bool operator==(const Edge& rhs) {
+	inline bool operator==(const Edge& rhs) const {
 		// This checks if first and second are equal between pairs
 		if (this->blocks == rhs.blocks) {
 			return true;
@@ -72,7 +72,7 @@ public:
 		}
 		return false;
 	}
-	inline bool operator < (const Edge& rhs) {
+	inline bool operator < (const Edge& rhs) const {
 		if (this->blocks.first == rhs.blocks.first) {
 			return this->blocks.second < rhs.blocks.second;
 		}

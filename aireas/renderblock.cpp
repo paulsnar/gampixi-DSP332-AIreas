@@ -116,7 +116,7 @@ void RenderBlock::render(float xoff, float yoff, bool debug)
 
 	if (debug) {
 		char debug_text[8];
-		sprintf_s(debug_text, 8, "%d", linked.size());
+		snprintf(debug_text, 8, "%lu", linked.size());
 		
 		DrawText(debug_text, final_rect.x, final_rect.y, 10, DARKBLUE);
 	}

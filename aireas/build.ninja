@@ -1,0 +1,16 @@
+CPP = clang++
+CFLAGS = -std=c++17 -I../raylib/src/
+
+rule cpp_obj
+  command = $CPP $CFLAGS -c $in -o$out
+
+rule cpp_link
+  command = $CPP $CFLAGS -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL libraylib.a $in -o$out
+
+build aireas.o: cpp_obj aireas.cpp
+build field_graph.o: cpp_obj field_graph.cpp
+build gamestate.o: cpp_obj gamestate.cpp
+build renderblock.o: cpp_obj renderblock.cpp
+build state_tree.o: cpp_obj state_tree.cpp
+
+build aireas: cpp_link aireas.o field_graph.o gamestate.o renderblock.o state_tree.o
